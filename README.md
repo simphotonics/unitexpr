@@ -52,8 +52,10 @@ unit_symbols = (
             UnitSymbol(symbol='kg','name'='kilogram',quantity='weight')
         )
 ```
-The attribute `symbol` must be a valid Python identifier and it is
-advisable to choose the unit variable name as the symbol.
+The attribute `symbol` must be a valid Python identifier. It is
+advisable to choose the unit variable name as the symbol. For example,
+in the section below, the constant `c` represents the speed of light and
+the unit symbol is 'c'.
 
 ### Defining a Unit System
 
@@ -196,13 +198,14 @@ print(Pi*a*expr)
 Please file feature requests and bugs at the [issue tracker].
 Contributions are welcome.
 
-
 [issue tracker]: https://github.com/simphotonics/unitexpr/issues
-
-[unitexpr]: https://github.com/simphotonics/unitexpr
-
-[pytest]: https://pypi.org/project/pytest/
 
 [numpy]: https://pypi.org/project/numpy/
 
+[pypi]: https:://pypi.org
+
+[pytest]: https://pypi.org/project/pytest/
+
 [scimath]: https://pypi.org/project/scimath
+
+[unitexpr]: https://github.com/simphotonics/unitexpr
