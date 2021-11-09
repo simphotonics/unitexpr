@@ -1,0 +1,34 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+[tool.portray]
+repo_url = "https://github.com/simphotonics/unitexpr"
+extra_markdown_extensions = ["fenced_code", "pymdownx.superfences"]
+directory = "/home/dan/WORK/PythonProjects/unitexpr/src"
+#package_directory = "/home/dan/WORK/PythonProjects/generic_validation/src"
+
+[tool.portray.mkdocs.theme]
+#custom_dir =  "/home/dan/.local/lib/python3.8/site-packages/portray/mkdocs_templates"
+name = "material"
+
+[[tool.portray.mkdocs.theme.palette]]
+scheme = "default"
+accent = "lightgreen"
+primary = "teal"
+
+  [tool.portray.mkdocs.theme.palette.toggle]
+  icon = "material/toggle-switch-off-outline"
+  name = "Switch to dark mode"
+
+[[tool.portray.mkdocs.theme.palette]]
+scheme = "slate"
+accent = "lightgreen"
+primary = "teal"
+
+  [tool.portray.mkdocs.theme.palette.toggle]
+  icon = "material/toggle-switch"
+  name = "Switch to light mode"

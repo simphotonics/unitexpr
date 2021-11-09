@@ -1,0 +1,196 @@
+'''
+Numpy array with the additional attribute `unit`.
+'''
+
+from typing import Union
+
+import numpy as np
+
+from .unit import UnitBase, UnitExprBase
+
+
+class UnitArray(np.ndarray):
+    '''
+    Sub-class of ndarray with an additional instance
+    attribute representing a unit.
+
+    Implementation closely follows:
+    https://numpy.org/devdocs/user/basics.subclassing.html#basics-subclassing
+    '''
+    # pylint: disable=bad-classmethod-argument
+    # pylint: disable=too-many-arguments
+    # pylint: disable=attribute-defined-outside-init
+    def __new__(subtype, shape, dtype=float, buffer=None, offset=0,
+                strides=None, order=None, unit=1.0):
+        # The call in the next line triggers a call to
+        # UnitArray.__array_finalize__
+        obj = super().__new__(subtype, shape, dtype,
+                              buffer, offset, strides, order)
+        obj.unit = unit
+        return obj
+
+    def __array_finalize__(self, obj):
+        # ``self`` is a new object resulting from
+        # ndarray.__new__(UnitArray, ...), therefore it only has
+        # attributes that the ndarray.__new__ constructor gave it -
+        # i.e. those of a standard ndarray.
+        #
+        # We could have got to the ndarray.__new__ call in 3 ways:
+        # From an explicit constructor - e.g. UnitArray():
+        #    obj is None
+        #    (we're in the middle of the UnitArray.__new__
+        #    constructor, and self.unit will be set when we return to
+        #    UnitArray.__new__)
+        if obj is None:
+            return
+        # From view casting - e.g arr.view(UnitArray):
+        #    obj is arr
+        #    (type(obj) can be UnitArray)
+        # From new-from-template - e.g infoarr[:3]
+        #    type(obj) is UnitArray
+        #
+        # Note that it is here, rather than in the __new__ method,
+        # that we set the default value for 'unit', because this
+        # method sees all creation of default objects - with the
+        # UnitArray.__new__ constructor, but also with
+        # arr.view(UnitArray).
+        self.unit = getattr(obj, 'unit', 1.0)
+
+    def __str__(self) -> str:
+        return super().__str__() + ' unit: ' + str(self.unit)
+
+    def __repr__(self) -> str:
+        return super().__repr__() + ' unit: ' + str(self.unit)
+
+    def __add__(self, other):
+        obj = super().__add__(other)
+        obj.unit = self.unit + other.unit
+        return obj
+
+    def __sub__(self, other):
+        obj = super().__sub__(other)
+        obj.unit = self.unit - other.unit
+        return obj
+
+    def __mul__(self, other):
+        '''
+        Returns the result of multiplying the united ndarray `self`
+        with `other`.
+        '''
+        if isinstance(other, UnitBase):
+            obj = self.copy()
+            obj.unit = self.unit * other
+            return obj
+
+        if isinstance(other, UnitExprBase):
+            if other.factor == 1.0:
+                obj = self.copy()
+                obj.unit = self.unit * other
+            else:
+                obj = self.__mul__(other.factor)
+                obj.unit = self.unit * other.unit.scale(1.0/other.factor)
+            return obj
+
+        obj = super().__mul__(other)
+        try:
+            obj.unit = self.unit * other.unit
+        except AttributeError:
+            obj.unit = self.unit
+        return obj
+
+    def __rmul__(self, other):
+        '''
+        Returns the result of multiplying `other` with the united array
+        `self`.
+        '''
+        if isinstance(other, UnitBase):
+            obj = self.copy()
+            obj.unit = other * self.unit
+            return obj
+
+        if isinstance(other, UnitExprBase):
+            if other.factor == 1.0:
+                obj = self.copy()
+                obj.unit = other * self.unit
+            else:
+                obj = self.__mul__(other.factor)
+                obj.unit = other.unit.scale(1.0/other.factor) * self.unit
+            return obj
+
+        obj = super().__mul__(other)
+        try:
+            obj.unit = other.unit * self.unit
+        except AttributeError:
+            obj.unit = self.unit
+        return obj
+
+    def __truediv__(self, other):
+        '''
+        Returns the result of dividing the united ndarray `self`
+        with `other`.
+        '''
+        if isinstance(other, UnitBase):
+            obj = self.copy()
+            obj.unit = self.unit/other
+            return obj
+
+        if isinstance(other, UnitExprBase):
+            if other.factor == 1.0:
+                obj = self.copy()
+                obj.unit = self.unit/other
+            else:
+                obj = self.__truediv__(other.factor)
+                obj.unit = self.unit/other.unit.scale(other.factor)
+            return obj
+
+        obj = super().__truediv__(other)
+        try:
+            obj.unit = self.unit / other.unit
+        except AttributeError:
+            obj.unit = self.unit
+        return obj
+
+    # def __rtruediv__(self, other):
+    #     '''
+    #     Returns the result of dividing `other` by the united ndarray `self`.
+    #     '''
+    #     if isinstance(other, UnitBase):
+    #         obj = self.copy()
+    #         obj.unit = other/self.unit
+    #         return obj
+
+    #     if isinstance(other, UnitExprBase):
+    #         if other.factor == 1.0:
+    #             obj = self.copy()
+    #             obj.unit = other/self.unit
+    #         else:
+    #             obj = self.__rtruediv__(other.factor)
+    #             obj.unit = other.unit.scale(other.factor)/self.unit
+    #         return obj
+
+    #     obj = super().__rtruediv__(other)
+    #     try:
+    #         obj.unit = other.unit/self.unit
+    #     except AttributeError:
+    #         obj.unit = self.unit**-1
+    #     return obj
+
+    def __pow__(self, other: Union[float, int]):
+        obj = super().__pow__(other)
+        obj.unit = self.unit.__pow__(other)
+        return obj
+
+    def __abs__(self):
+        obj = super().__abs__()
+        obj.unit = self.unit
+        return obj
+
+    def __neg__(self) -> 'UnitArray':
+        obj = super().__neg__()
+        obj.unit = self.unit
+        return obj
+
+    def __pos__(self) -> 'UnitArray':
+        obj = super().__pos__()
+        obj.unit = self.unit.__pos__()
+        return obj
