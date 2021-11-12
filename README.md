@@ -43,7 +43,7 @@ to define unit systems and united numpy arrays.
 In order to define a unit system, one must first specify the
 base units. In the context of this package this is done using
 the immutable class `UnitSymbol` which has
-the instance attributes `symbol`, `name`, and `quantity`.
+the following instance attributes: `symbol`, `name`, and `quantity`.
 ``` Python
 # Defining unit symbols
 unit_symbols = (
@@ -52,10 +52,7 @@ unit_symbols = (
             UnitSymbol(symbol='kg','name'='kilogram',quantity='weight')
         )
 ```
-The attribute `symbol` must be a valid Python identifier. It is
-advisable to choose the unit variable name as the symbol. For example,
-in the section below, the constant `c` represents the speed of light and
-the unit symbol is 'c'.
+The attribute `symbol` must be a valid Python identifier.
 
 ### Defining a Unit System
 
@@ -63,10 +60,12 @@ A custom unit system can be defined by sub-classing [`UnitBase`][UnitBase]:
 
 ```Python
 # Defining a unit system using the base unit symbol specified above.
+# Note the use of the metaclass `UnitMeta`.
 class MetricUnit(UnitBase, metaclass=UnitMeta, unit_symbols=unit_symbols):
     pass
 
-# Base units are available as class attributes. For example:
+# Base units are available as class attributes.
+# For example:
 m = MetricUnit.m
 s = MetricUnit.s
 kg = MetricUnit.kg
@@ -76,7 +75,7 @@ assert type(m) == MetricUnit
 # Declaring derived units
 c = MetricUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)
 ```
-The class definition requires an iterable with entries of type `UnitSymbol`
+The class definition requires a tuple with entries of type `UnitSymbol`
 which are used to specify the base units.
 
 The base units are constructed during the instantiation of the meta-class
@@ -86,14 +85,48 @@ Derived units and unit expressions can be constructed using the operations:
 - multiplication: `J = MetricUnit('J', 'joule', 'energy', expr=N*m)`
 - division: `W = SiUnit('W', 'watt', 'power', expr=J/s)`
 - scalar multiplication: `c = MetricUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)`
-- exponentiation: `N = MetricUnit('N', 'newton', 'force', expr=kg*m*s**-2)`
+- exponentiation: `N = MetricUnit('N', 'newton', 'force', expr=kg*m*s**-2)`.
 
-The operations above follow the mathematical conventions, however
-unit *addition* and *subtraction* operations are defined such that:
-`c == c + c` and `c == c - c`. To perform arithmetic operations using units
-it is recommended to use united arrays.
+It is advisable to choose he unit variable name as the unit symbol. For example,
+the constant `c` (defined above) represents
+the speed of light and its unit symbol was set to 'c'.
 
 Note: Units and unit expressions extend Python's `namedtuple` and as such are immutable.
+
+### Unit Expressions
+
+Unit expressions are objects with base class `UnitExprBase`. Each unit system
+defines a unique unit expression type that is available as a class attribute
+(`.expr_type`). Valid unit expression terms for a given unit system are:
+base units, derived units, unit expressions, and numbers of type float and int.
+
+``` python
+# Accessing the unit expression type of the units system defined above:
+MetricUnitExpr = MetricUnit.expr_type
+assert type(m/s) == MetricUnitExpr
+
+# Examples of unit expressions:
+v = 10.0*m/s
+w = v + 20.0*v
+```
+
+When adding or subtracting units and unit expression the term on the left
+side determines the form of the expression. This is best shown in the example
+below.
+``` python
+
+# Define units:
+c_light = MetricUnit('c_light', 'speed of light', 'velocity', expr=299792458*m/s)
+c_sound = MetricUnit('c_sound', 'speed of sound', 'velocity', expr=343*m/s)
+
+v1 = c_light + c_sound
+v2 = c_sound + c_light
+
+assert v1 == v2
+
+print(v1) # Prints:  1.0000011441248464*c_light
+print(v2) # Prints:  874031.4897959183*c_sound
+```
 
 
 ### United Numpy Arrays
@@ -183,7 +216,7 @@ print(a*expr)
 # [[98.1 98.1]
 #  [98.1 98.1]] unit: kg*m*s**-2.0
 
-Pi = SiUnit(symbol = 'Pi', name = 'Pi',quantity = 'number', expr=math.pi*SiUnit.expr_type.one)
+Pi = SiUnit(symbol='Pi', name='Pi', quantity='number', expr=pi*SiUnit.expr_type.one)
 
 print(Pi*a*expr)
 # Prints:
@@ -191,6 +224,11 @@ print(Pi*a*expr)
 #  [98.1 98.1]] unit: Pi*kg*m*s**-2.0
 
 ```
+
+Unit and unit expressions with zero magnitude may `not` be used with united arrays.
+The instance attribute `unit` is a `@property`. In its set method the
+array is multiplied with the unit expression `factor` and for consistency the
+unit is divided by the same factor resulting in a `DivisionByZeroError`.
 
 
 ## Features and bugs
