@@ -5,6 +5,9 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[tool.black]
+line-length = 79
+
 [tool.portray]
 repo_url = "https://github.com/simphotonics/unitexpr"
 extra_markdown_extensions = ["fenced_code", "pymdownx.superfences"]
