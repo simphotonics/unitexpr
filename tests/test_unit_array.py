@@ -20,6 +20,12 @@ class TestUnitArray:
         assert a.unit == 1.0
         assert a.unit == m.expr_type.one
 
+    def test_set_unit(self):
+        x = a.copy()
+        x.unit = 1000*m/s
+        assert x[0,0] == 1.0e4
+        assert x.unit.factor == 1.0
+
     def test_mul(self):
         assert (m1*s1).unit == m*s
 

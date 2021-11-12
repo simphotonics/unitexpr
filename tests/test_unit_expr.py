@@ -9,9 +9,10 @@ v = SiUnit('v', 'meter/second', 'speed', expr=10.0*m/s)
 
 #
 # Expressions
-v_expr = SiUnitExpr.from_dict({v: 1})
+v_expr = v*1.0
 one = SiUnit.expr_type.one
-two = SiUnitExpr.from_dict({}, 2)
+two = one*2.0
+zero = one*0.0
 
 
 class TestUnitExprFactor:
@@ -26,10 +27,12 @@ class TestUnitExprFactor:
     def test_div(self):
         assert (one/10).factor == 1/10
         assert (10/one).factor == 10
+        assert (zero/one) == zero
 
     def test_pow(self):
         assert (one**10).factor == 1
         assert (SiUnitExpr.from_dict({}, 10)**10).factor == 10**10
+        assert zero**2 == zero
 
 
 class TestUnitExprEqual:
@@ -41,6 +44,7 @@ class TestUnitExprEqual:
         assert two == 2
         assert 1 == one
         assert 2 == two
+        assert zero == 0
 
     def test_equal_unit(self):
         assert m*1 == m
@@ -82,14 +86,14 @@ class TestUnitExprMul:
 
 class TestUnitExprAdd:
     def test_add(self):
-        assert v_expr + v_expr == v_expr
-        assert v_expr + v == v
+        assert v_expr + v_expr == 2.0*v_expr
+        assert v_expr + v == 2.0*v
 
 
 class TestUnitExprSub:
     def test_sub(self):
-        assert v_expr - v_expr == v_expr
-        assert v_expr - v == v
+        assert v_expr - v_expr == 0.0*v_expr
+        assert v_expr - v == 0.0*v
 
 
 class TestUnitExprDiv:
