@@ -1,6 +1,6 @@
-'''
+"""
 Module providing custom error classes.
-'''
+"""
 
 
 class OperationNotSupported(Exception):
@@ -14,8 +14,9 @@ class OperationNotSupported(Exception):
         - `operator`: Arithmetic operator used in the expression.
         - `message`: Explanation of the error.
     """
+
     # pylint: disable=too-many-function-args
-    def __init__(self, left, right, operator, addon_message=''):
+    def __init__(self, left, right, operator, addon_message=""):
         self.left = left
         self.right = right
         self.operator = operator
@@ -23,23 +24,26 @@ class OperationNotSupported(Exception):
         super().__init__(self)
 
     def __str__(self):
-        '''
+        """
         Returns the error message string.
-        '''
-        return "Could not evaluate" + \
-            f"{self.left.__class__.__name__}:{self.left.__repr__()} " + \
-            f"{self.operator} {self.right.__class__.__name__}:" + \
-            f"{self.right.__repr__()}" + self.addon_message
+        """
+        return (
+            "Could not evaluate "
+            + f"{self.left.__class__.__name__}:{self.left.__repr__()} "
+            + f"{self.operator} {self.right.__class__.__name__}:"
+            + f"{self.right.__repr__()}"
+            + self.addon_message
+        )
 
     def __repr__(self):
-        '''
+        """
         Return the error message string.
-        '''
+        """
         return self.__str__(self)
 
     def invert(self):
-        '''
+        """
         Changes the order of the operands. (left, right) = (right, left)
-        '''
+        """
         (self.left, self.right) = (self.right, self.left)
         return self
