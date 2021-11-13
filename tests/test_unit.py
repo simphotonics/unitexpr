@@ -1,11 +1,7 @@
-from decimal import DivisionByZero
 import pytest
 
 from unitexpr.unit import *
-from unitexpr.si_units import m, s, kg, c, SiUnit
-from scimath.units.length import meter
-from scimath.units.time import second
-from scimath.units.mass import kilogram
+from unitexpr.si_units import m, s, c, SiUnit
 
 factor = 10.0
 SiUnitExpr = SiUnit.expr_type
@@ -68,10 +64,11 @@ class TestUnitMul:
         assert m * c == c * m
 
     def test_times_expr(self):
-        assert c * c.expr == c**2
-        assert c * c.expr == c**2
-        assert c* c.self_expr == c**2
-        assert c * 0.5*c  == 0.5*c**2
+        assert c * c.expr == c ** 2
+        assert c * c.expr == c ** 2
+        assert c * c.self_expr == c ** 2
+        assert c * 0.5 * c == 0.5 * c ** 2
+
 
 class TestUnitAdd:
     def test_add_unit(self):
@@ -92,9 +89,9 @@ class TestUnitAdd:
         assert zero + ten == ten
 
     def test_add_expr(self):
-        assert ten + ten.self_expr == 2.0*ten
-        assert ten + 0.0*ten == ten
-        assert 0.0*ten + ten == ten
+        assert ten + ten.self_expr == 2.0 * ten
+        assert ten + 0.0 * ten == ten
+        assert 0.0 * ten + ten == ten
 
     def test_add_incompatible_units(self):
         with pytest.raises(OperationNotSupported):
@@ -126,9 +123,9 @@ class TestUnitSubtraction:
             assert impossible_unit == m - s
 
     def test_sub_expr(self):
-        assert ten - 3.0*ten.self_expr == -2.0*ten
-        assert ten - 0.0*ten == ten
-        assert 0.0*ten - ten == -ten
+        assert ten - 3.0 * ten.self_expr == -2.0 * ten
+        assert ten - 0.0 * ten == ten
+        assert 0.0 * ten - ten == -ten
 
 
 class TestUnitDivision:

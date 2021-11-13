@@ -5,39 +5,38 @@ from unitexpr.si_units import SiUnit, m, s, c
 SiUnitExpr = SiUnit.expr_type
 
 factor = 10.0
-v = SiUnit('v', 'meter/second', 'speed', expr=10.0*m/s)
+v = SiUnit("v", "meter/second", "speed", expr=10.0 * m / s)
 
 #
 # Expressions
-v_expr = v*1.0
+v_expr = v * 1.0
 one = SiUnit.expr_type.one
-two = one*2.0
-zero = one*0.0
+two = one * 2.0
+zero = one * 0.0
 
 
 class TestUnitExprFactor:
-
     def test_default(self):
         assert SiUnitExpr.from_dict({}).factor == 1
 
     def test_mul(self):
-        assert (one*10).factor == 10
-        assert (10*one).factor == 10
+        assert (one * 10).factor == 10
+        assert (10 * one).factor == 10
 
     def test_div(self):
-        assert (one/10).factor == 1/10
-        assert (10/one).factor == 10
-        assert (zero/one) == zero
+        assert (one / 10).factor == 1 / 10
+        assert (10 / one).factor == 10
+        assert (zero / one) == zero
 
     def test_pow(self):
-        assert (one**10).factor == 1
-        assert (SiUnitExpr.from_dict({}, 10)**10).factor == 10**10
-        assert zero**2 == zero
+        assert (one ** 10).factor == 1
+        assert (SiUnitExpr.from_dict({}, 10) ** 10).factor == 10 ** 10
+        assert zero ** 2 == zero
 
 
 class TestUnitExprEqual:
     def test_equal_string(self):
-        assert SiUnitExpr.from_dict({}) != 'A string.'
+        assert SiUnitExpr.from_dict({}) != "A string."
 
     def test_equal_numerical(self):
         assert one == 1
@@ -47,62 +46,62 @@ class TestUnitExprEqual:
         assert zero == 0
 
     def test_equal_unit(self):
-        assert m*1 == m
-        assert 1*m == m
-        assert 1*m == m*1
+        assert m * 1 == m
+        assert 1 * m == m
+        assert 1 * m == m * 1
 
     def test_equal_derived_unit(self):
-        assert 1*v == v*1
-        assert (v*1) == v
-        assert (1*v) == (v*1)
-        assert (1*v) == (v.base_expr)
+        assert 1 * v == v * 1
+        assert (v * 1) == v
+        assert (1 * v) == (v * 1)
+        assert (1 * v) == (v.base_expr)
 
 
 class TestUnitExprStr:
     def test_str(self):
-        assert str(m) == 'm'
-        assert str(v) == 'v'
-        assert str(v*2) == '2.0*v'
-        assert str(v.base_expr) == '10.0*m*s**-1.0'
-        assert str(one) == '1.0'
+        assert str(m) == "m"
+        assert str(v) == "v"
+        assert str(v * 2) == "2.0*v"
+        assert str(v.base_expr) == "10.0*m*s**-1.0"
+        assert str(one) == "1.0"
 
 
 class TestUnitExprMul:
     def test_times_number(self):
-        assert v_expr*1 == SiUnitExpr.from_dict({v: 1})
-        assert v_expr*factor == SiUnitExpr.from_dict({v: 1}, factor)
+        assert v_expr * 1 == SiUnitExpr.from_dict({v: 1})
+        assert v_expr * factor == SiUnitExpr.from_dict({v: 1}, factor)
 
     def test_times_unit(self):
-        assert v_expr*m == m*v_expr
-        assert v_expr*m == SiUnitExpr.from_dict({v: 1, m: 1}) == m*v
+        assert v_expr * m == m * v_expr
+        assert v_expr * m == SiUnitExpr.from_dict({v: 1, m: 1}) == m * v
 
     def test_times_derived_unit(self):
-        assert (m*1)*v == v*(m*1) == v*m
+        assert (m * 1) * v == v * (m * 1) == v * m
 
     def test_times_constant(self):
-        assert v_expr*c == c*v_expr
-        assert 2*c == c*2 == SiUnitExpr.from_dict({c: 1}, 2)
+        assert v_expr * c == c * v_expr
+        assert 2 * c == c * 2 == SiUnitExpr.from_dict({c: 1}, 2)
 
 
 class TestUnitExprAdd:
     def test_add(self):
-        assert v_expr + v_expr == 2.0*v_expr
-        assert v_expr + v == 2.0*v
+        assert v_expr + v_expr == 2.0 * v_expr
+        assert v_expr + v == 2.0 * v
 
 
 class TestUnitExprSub:
     def test_sub(self):
-        assert v_expr - v_expr == 0.0*v_expr
-        assert v_expr - v == 0.0*v
+        assert v_expr - v_expr == 0.0 * v_expr
+        assert v_expr - v == 0.0 * v
 
 
 class TestUnitExprDiv:
     def test_div(self):
-        assert v_expr/v_expr == one
-        assert v_expr*s/m == factor
-        assert v/v_expr == one
+        assert v_expr / v_expr == one
+        assert v_expr * s / m == factor
+        assert v / v_expr == one
 
 
 class TestUnitExprPow:
     def test_pow(self):
-        assert one**10 == one
+        assert one ** 10 == one
