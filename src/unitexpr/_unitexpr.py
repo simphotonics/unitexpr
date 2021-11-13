@@ -261,7 +261,7 @@ class UnitExprBase(
         """
         Returns an expression of self in terms of base units.
         """
-        dexpr = UnitDict()
+        dexpr = {}
         for term, exponent in zip(
             self.unit_type.base_units, self.base_exponents
         ):
@@ -353,21 +353,20 @@ class UnitExprBase(
         ):
             if self.base_factor == 0 or not self.terms:
                 return (
-                    other if isinstance(other, UnitExprBase) else other * 1.0
+                    other
+                    if isinstance(other, UnitExprBase)
+                    else other.self_expr
                 )
 
             base_factor = self.base_factor + other.base_factor
-            factor = (
-                self.factor
-                + other.factor * other.base_factor / self.base_factor
-            )
+            factor = base_factor / self.base_factor * self.factor
 
             return self.__class__(
-                terms=self.terms,
-                exponents=self.exponents,
-                factor=factor,
-                base_exponents=self.base_exponents,
-                base_factor=base_factor,
+                self.terms,
+                self.exponents,
+                factor,
+                self.base_exponents,
+                base_factor,
             )
 
         if (
@@ -379,7 +378,7 @@ class UnitExprBase(
             if self.base_factor == 0 or not self.terms:
                 return self.one * base_factor
 
-            factor = self.factor + other / self.base_factor
+            factor = base_factor / self.base_factor * self.factor
 
             return self.__class__(
                 self.terms,
@@ -404,17 +403,14 @@ class UnitExprBase(
                 return self
 
             base_factor = other.base_factor + self.base_factor
-            factor = (
-                other.factor
-                + self.factor * self.base_factor / other.base_factor
-            )
+            factor = base_factor / other.base_factor * other.factor
 
             return self.__class__(
-                terms=other.terms,
-                exponents=other.exponents,
-                factor=factor,
-                base_exponents=other.base_exponents,
-                base_factor=base_factor,
+                other.terms,
+                other.exponents,
+                factor,
+                other.base_exponents,
+                base_factor,
             )
 
         if (
@@ -428,8 +424,7 @@ class UnitExprBase(
                 return self.one * other
 
             base_factor = other + self.base_factor
-
-            factor = self.factor + other / self.base_factor
+            factor = base_factor / self.base_factor* self.factor
 
             return self.__class__(
                 self.terms,
@@ -453,18 +448,14 @@ class UnitExprBase(
                 return -other
 
             base_factor = self.base_factor - other.base_factor
-
-            factor = (
-                self.factor
-                - other.factor * other.base_factor / self.base_factor
-            )
+            factor = base_factor / self.base_factor* self.factor
 
             return self.__class__(
-                terms=self.terms,
-                exponents=self.exponents,
-                factor=factor,
-                base_exponents=self.base_exponents,
-                base_factor=base_factor,
+                self.terms,
+                self.exponents,
+                factor,
+                self.base_exponents,
+                base_factor,
             )
 
         if (
@@ -476,7 +467,7 @@ class UnitExprBase(
             if self.base_factor == 0 or not self.terms:
                 return self.one * base_factor
 
-            factor = self.factor - other / self.base_factor
+            factor = base_factor / self.base_factor*self.factor
 
             return self.__class__(
                 self.terms,
@@ -500,17 +491,14 @@ class UnitExprBase(
                 return -self
 
             base_factor = other.base_factor - self.base_factor
+            factor = base_factor / other.base_factor*other.factor
 
-            factor = (
-                other.factor
-                - self.factor * self.base_factor / other.base_factor
-            )
             return self.__class__(
-                terms=other.terms,
-                exponents=other.exponents.exponents,
-                factor=factor,
-                base_exponents=other.base_exponents,
-                base_factor=base_factor,
+                other.terms,
+                other.exponents.exponents,
+                factor,
+                other.base_exponents,
+                base_factor,
             )
 
         if (
@@ -522,7 +510,7 @@ class UnitExprBase(
             if self.base_factor == 0 or not self.terms:
                 return self.one * base_factor
 
-            factor = other / self.base_factor - self.factor
+            factor = base_factor / self.base_factor*self.factor
 
             return self.__class__(
                 self.terms,

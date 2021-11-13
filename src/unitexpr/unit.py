@@ -173,7 +173,6 @@ class UnitBase(
         * other is numeric and the resolved expression of `self` represents a
         the same number. (All base exponents must be zero).
         """
-
         if isinstance(other, self.expr_type):
             return (
                 self.base_factor == other.base_factor
@@ -186,7 +185,7 @@ class UnitBase(
                 and self.base_factor == other
             )
 
-        return id(self) == id(other)
+        return self is other
 
     def __ne__(self, other: object) -> bool:
         """
@@ -208,7 +207,7 @@ class UnitBase(
                 or self.base_factor != other
             )
 
-        return id(self) != id(other)
+        return self is other
 
     def __hash__(self) -> int:
         return id(self)
@@ -247,19 +246,40 @@ class UnitBase(
     @property
     def expr(self) -> UnitExprBase:
         """
-        Returns an expression representing self in terms of
+        Returns an expression representing `self` in terms of
         `sub_terms`.
         ``` python
-        c = SiUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)
-        c_expr = c.sub_expr()
-        print(c_expr)
-        # prints: 299792458.0*m*s**-1
+        J = SiUnit('J', 'Joule', 'energy', expr=N*m)
+        print(J.expr)  # prints: N*m
         ```
         """
         return self.expr_type(
             terms=self.sub_terms,
             exponents=self.sub_exponents,
             factor=self.sub_factor,
+            base_exponents=self.base_exponents,
+            base_factor=self.base_factor,
+        )
+
+    @property
+    def self_expr(self) -> UnitExprBase:
+        """
+        Returns an expression representing `self` in terms of `self`.
+        An alternative method of converting a unit to a unit expression is
+        multiplication by 1.0.
+        ``` python
+        J = SiUnit('J', 'Joule', 'energy', expr=N*m)
+        assert J.self_expr == J
+        assert J.self_expr == 1.0*J
+        assert type(J.self_expr) == SiUnit.expr_type
+
+        print(J_expr) # Prints: J
+        ```
+        """
+        return self.expr_type(
+            terms=(self,),
+            exponents=(1.0,),
+            factor=1.0,
             base_exponents=self.base_exponents,
             base_factor=self.base_factor,
         )
@@ -320,21 +340,20 @@ class UnitBase(
         ):
             if self.base_factor == 0:
                 return (
-                    other if isinstance(other, UnitExprBase) else other * 1.0
+                    other
+                    if isinstance(other, UnitExprBase)
+                    else other.self_expr
                 )
 
             base_factor = self.base_factor + other.base_factor
-            factor = (
-                self.factor
-                + other.factor * other.base_factor / self.base_factor
-            )
+            factor = base_factor / self.base_factor  # self.factor == 1.0
 
             return self.expr_type(
-                terms=self.terms,
-                exponents=self.exponents,
-                factor=factor,
-                base_exponents=self.base_exponents,
-                base_factor=base_factor,
+                self.terms,
+                self.exponents,
+                factor,
+                self.base_exponents,
+                base_factor,
             )
 
         if (
@@ -346,7 +365,7 @@ class UnitBase(
             if self.base_factor == 0:
                 return self.expr_type.one * base_factor
 
-            factor = self.factor + other / self.base_factor
+            factor = base_factor / self.base_factor  # self.factor == 1.0
 
             return self.expr_type(
                 self.terms,
@@ -371,20 +390,17 @@ class UnitBase(
             and self.base_exponents == other.base_exponents
         ):
             if other.base_factor == 0 or not other.terms:
-                return self * 1.0
+                return self.self_expr
 
             base_factor = other.base_factor + self.base_factor
-            factor = (
-                other.factor
-                + self.factor * self.base_factor / other.base_factor
-            )
+            factor = base_factor / other.base_factor * other.factor
 
             return self.expr_type(
-                terms=other.terms,
-                exponents=other.exponents,
-                factor=factor,
-                base_exponents=other.base_exponents,
-                base_factor=base_factor,
+                other.terms,
+                other.exponents,
+                factor,
+                other.base_exponents,
+                base_factor,
             )
 
         if (
@@ -392,14 +408,13 @@ class UnitBase(
             and self.base_exponents == self.base_exponents_zero
         ):
             if other == 0:
-                return self * 1.0
+                return self.self_expr
 
             if self.base_factor == 0:
                 return self.one * other
 
             base_factor = other + self.base_factor
-
-            factor = self.factor + other / self.base_factor
+            factor = base_factor / self.base_factor  # self.factor == 1.0
 
             return self.expr_type(
                 self.terms,
@@ -426,10 +441,7 @@ class UnitBase(
                 return -other
 
             base_factor = self.base_factor - other.base_factor
-            factor = (
-                self.factor
-                - other.factor * other.base_factor / self.base_factor
-            )
+            factor = base_factor / self.base_factor  # self.factor == 1.0
 
             return self.expr_type(
                 terms=self.terms,
@@ -448,7 +460,7 @@ class UnitBase(
             if self.base_factor == 0 or not self.terms:
                 return self.expr_type.one * base_factor
 
-            factor = self.factor - other / self.base_factor
+            factor = base_factor / self.base_factor  # self.factor == 1.0
 
             return self.expr_type(
                 self.terms,
@@ -474,17 +486,14 @@ class UnitBase(
 
             base_factor = other.base_factor - self.base_factor
 
-            factor = (
-                other.factor
-                - self.factor * self.base_factor / other.base_factor
-            )
+            factor = base_factor / other.base_factor * other.factor
 
             return self.expr_type(
-                terms=other.terms,
-                exponents=other.exponents.exponents,
-                factor=factor,
-                base_exponents=other.base_exponents,
-                base_factor=base_factor,
+                other.terms,
+                other.exponents.exponents,
+                factor,
+                other.base_exponents,
+                base_factor,
             )
 
         if (
@@ -496,7 +505,7 @@ class UnitBase(
             if self.base_factor == 0 or not self.terms:
                 return self.one * base_factor
 
-            factor = other / self.base_factor - self.factor
+            factor = base_factor / self.base_factor
 
             return self.expr_type(
                 self.terms,
