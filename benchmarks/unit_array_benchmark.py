@@ -27,7 +27,7 @@ M1 = UnitArraySci(A, units=meter*meter)
 S1 = UnitArraySci(A, units=second)
 
 class TestAddition:
-    def test_add_unitexpr(self, benchmark):
+    def test_add_unitexpr_units(self, benchmark):
         def add():
             return M + M
 
@@ -45,7 +45,7 @@ class TestAddition:
 
 
 class TestMul:
-    def test_mult_unitexpr(self, benchmark):
+    def test_mult_unitexpr_units(self, benchmark):
         def expr():
             return M/S**2
 

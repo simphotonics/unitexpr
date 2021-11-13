@@ -20,7 +20,7 @@ v_scimath = meter/second
 N_scimath = kilogram*meter/(second*second)
 
 class TestAddition:
-    def test_add_unitexpr(self, benchmark):
+    def test_add_unitexpr_units(self, benchmark):
         def add():
             return m / s + m / s
 
@@ -35,23 +35,23 @@ class TestAddition:
         assert add() == 2.0 * meter / second
 
 class TestComparison:
-    def test_compare_unitexpr(self, benchmark):
+    def test_compare_unitexpr_units(self, benchmark):
         def compare():
-            return v == v_expr
+            return v == N
 
         benchmark.pedantic(compare, iterations=20000, rounds=4)
-        assert v == v_expr
+        assert v == v
 
     def test_compare_scimath_units(self, benchmark):
         def compare():
-            return v_scimath == v_scimath
+            return v_scimath == N_scimath
 
         benchmark.pedantic(compare, iterations=20000, rounds=4)
         assert v_scimath == v_scimath
 
 
 class TestMul:
-    def test_mult_unitexpr(self, benchmark):
+    def test_mult_unitexpr_units(self, benchmark):
         def expr():
             return kg*m*s**-2
 
