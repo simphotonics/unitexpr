@@ -27,22 +27,22 @@ An excerpt of a sample output (produced on a PC with 32GB RAM memory
 and an Intel Core i5-6260U CPU running at 1.80GHz) is displayed below:
 
 ```Console
-------------------------- benchmark: 6 tests -------------------------------------------------
-Name (time in ns)                     Mean              StdDev              Rounds  Iterations
-----------------------------------------------------------------------------------------------
-test_compare_scimath_units       203.8330 (1.0)       23.0057 (1.0)          4       20000
-test_compare_unitexpr_units      394.0667 (1.93)      39.9519 (1.74)         4       20000
+----------------------------- benchmark: 6 tests ------------------------------------------
+Name (time in ns)                   Mean              StdDev             Rounds  Iterations
+-------------------------------------------------------------------------------------------
+test_compare_scimath_units      378.0144 (1.0)       26.0803 (1.0)            4       20000
+test_compare_unitexpr_units     474.4168 (1.26)      77.8908 (2.99)           4       20000
 
-test_add_scimath_units         3,777.9920 (18.53)    163.5955 (7.11)         4       20000
-test_add_unitexpr_units        5,620.7861 (27.58)    209.8420 (9.12)         4       20000
+test_add_scimath_units        3,737.2815 (9.89)     449.5742 (17.24)          4       20000
+test_add_unitexpr_units       5,411.9090 (14.32)    678.7292 (26.02)          4       20000
 
-test_mult_scimath_units        4,401.2288 (21.59)    191.2286 (8.31)         4       20000
-test_mult_unitexpr_units       6,056.7404 (29.71)    394.6591 (17.15)        4       20000
-----------------------------------------------------------------------------------------------
+test_mult_scimath_units       4,308.2672 (11.40)    209.4878 (8.03)           4       20000
+test_mult_unitexpr_units      5,813.6167 (15.38)    278.0202 (10.66)          4       20000
+-------------------------------------------------------------------------------------------
 ```
 
 As the test runs above show [`scimath`][scimath] unit comparisons and unit
-operations are calculated faster compared to [`unitexpr`][unitexpr] units.
+operations are calculated slightly faster compared to [`unitexpr`][unitexpr] units.
 
 This result is expected due to the additional computational effort
 involved with keeping track of [`unitexpr`][unitexpr] terms as
@@ -54,12 +54,6 @@ expressions in terms of base units. The package
 [`unitexpr`][unitexpr] stores unit expressions in terms of
 base units *and* derived units.
 
-The advantage is that unit expressions
-retain their form. For example, the constant `m_e*c/h_bar` (where `m_e` is
-the electron mass, `c` is the velocity of light, `h_bar` is the
-reduced Planck constant) is displayed as `m_e*c*h_bar**-1.0`. In
-terms of SI base units the same constant is given by
-the less obvious expression: `2589605074819.227*m**-1.0`.
 
 ### United Numpy Arrays
 
@@ -79,19 +73,19 @@ To run the benchmarks from the root directory of the
 $ pytest benchmarks/unit_array_benchmark.py
 ```
 
-An excerpt of a sample output (produced on a PC with 32GB RAM memory
-and an Intel Core i5-6260U CPU running at 1.80GHz) is displayed below:
+A sample output (not all columns are shown) produced on a PC with 32GB RAM memory
+and an Intel Core i5-6260U CPU running at 1.80GHz is displayed below:
 
 ```Console
---------------------------------------------- benchmark: 4 tests --------------------
-Name (time in us)              Mean             StdDev             Rounds  Iterations
--------------------------------------------------------------------------------------
-test_add_unitexpr          816.8583 (1.0)       9.2904 (1.0)            2      500
-test_add_scimath_units   1,420.2525 (1.74)     13.9224 (1.50)           2      500
+------------------------------ benchmark: 4 tests -------------------------------------
+Name (time in us)                Mean             StdDev             Rounds  Iterations
+---------------------------------------------------------------------------------------
+test_add_unitexpr_units      668.8676 (1.0)      42.2704 (2.58)           2         500
+test_mult_scimath_units    1,525.8928 (2.28)     16.4058 (1.0)            2         500
 
-test_mult_unitexpr       1,558.9613 (1.91)     19.3059 (2.08)           2      500
-test_mult_scimath_units  1,612.5352 (1.97)     41.6187 (4.48)           2      500
--------------------------------------------------------------------------------------
+test_mult_unitexpr_units   1,562.2840 (2.34)     22.6044 (1.38)           2         500
+test_add_scimath_units     1,670.8240 (2.50)     75.7865 (4.62)           2         500
+---------------------------------------------------------------------------------------
 ```
 
 To produce the benchmarks the following arrays were constructed:
