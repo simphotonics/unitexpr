@@ -1,6 +1,6 @@
 # Unit Expressions For Python
-[![Python](https://github.com/simphotonics/generic_validation/actions/workflows/python.yml/badge.svg)](https://github.com/simphotonics/generic_validation/actions/workflows/python.yml)
-[![Python](https://simphotonics.com/images/docs-badge.svg)](https://generic-validation.simphotonics.com)
+[![tests](https://github.com/simphotonics/unitexpr/actions/workflows/test.yml/badge.svg)](https://github.com/simphotonics/unitexpr/actions/workflows/test.yml)
+<!-- [![Python](https://simphotonics.com/images/docs-badge.svg)](https://generic-validation.simphotonics.com) -->
 
 Attaching units to numerical quantities is a convenient way to check if
 an expression is valid or an equation is consistent.
