@@ -77,46 +77,68 @@ A sample output (not all columns are shown) produced on a PC with 32GB RAM memor
 and an Intel Core i5-6260U CPU running at 1.80GHz is displayed below:
 
 ```Console
------------------------------- benchmark: 4 tests -------------------------------------
-Name (time in us)                Mean             StdDev             Rounds  Iterations
----------------------------------------------------------------------------------------
-test_add_unitexpr_units      668.8676 (1.0)      42.2704 (2.58)           2         500
-test_mult_scimath_units    1,525.8928 (2.28)     16.4058 (1.0)            2         500
+--------------------------- benchmark: 4 tests -----------------------------------
+Name (time in us)             Mean             StdDev           Rounds  Iterations
+----------------------------------------------------------------------------------
+test_mult_scimath_units    69.5785 (1.00)     11.1675 (1.23)         2         500
+test_mult_unitexpr_units   69.3301 (1.0)      10.0463 (1.11)         2         500
 
-test_mult_unitexpr_units   1,562.2840 (2.34)     22.6044 (1.38)           2         500
-test_add_scimath_units     1,670.8240 (2.50)     75.7865 (4.62)           2         500
----------------------------------------------------------------------------------------
+test_add_unitexpr_units    76.7611 (1.11)      9.0428 (1.0)          2         500
+test_add_scimath_units     94.3358 (1.36)     16.3649 (1.81)         2         500
+----------------------------------------------------------------------------------
 ```
 
 To produce the benchmarks the following arrays were constructed:
 ``` python
-from numpy import ndarray
 
-from unitexpr.si_units import m, s
+from numpy import ndarray, array_equal
+
+from unitexpr.si_units import m, s, SiUnit
 from unitexpr.unit_array import UnitArray
 
-from scimath.units.length import meter
+from scimath.units.length import meter, centimeter
 from scimath.units.time import second
+from scimath.units.mass import kilogram
+
 from scimath.units.unit_array import UnitArray as UnitArraySci
 
-M = UnitArray(shape=(1000, 1000), unit=m**2)
-M.fill(10.0)
+cm = SiUnit("cm", "centimeter", "length", 1.0e-2 * m)
 
-S = UnitArray(shape=(1000, 1000), unit=s)
-S.fill(10.0)
+nx = 200
+ny = 200
 
-A = ndarray(shape=(1000,1000))
+A = ndarray(shape=(nx, ny))
 A.fill(10.0)
 
-M1 = UnitArraySci(A, units=meter*meter)
-S1 = UnitArraySci(A, units=second)
+M = UnitArray(shape=(nx, ny), unit=m ** 2)
+M.fill(10.0)
+
+C = UnitArray(shape=(nx, ny), unit=cm ** 2)
+C.fill(1.0e4)
+
+S = UnitArray(shape=(nx, ny), unit=s)
+S.fill(10.0)
+
+R = UnitArray(shape=(nx, ny), unit=m ** 2)
+R.fill(11)
 ```
 
 The first set of benchmarks was produced by repeatedly calculating the
-expressions: `M + M` and `M1 + M1`.
+expressions: `M + C` and `M1 + C1`.
 
 The second set of benchmarks was produced by calculating
 `M/(S**2)` and `M1/(S1**2)`.
+
+
+The results displayed above show that performance of
+`unitexpr` and `scimath` united arrays is very similar.
+
+As a rough estimate calculations involving units are of the order of microseconds to
+tens of microseconds (depending on the complexitiy of the unit expression).
+
+The fraction of computational time spent on unit operations becomes negligable
+when performing calculations on large arrays with more than 10000 elements.
+
 
 
 ## Features and bugs
