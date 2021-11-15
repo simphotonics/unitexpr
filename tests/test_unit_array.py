@@ -1,8 +1,13 @@
 import pytest
 
-from unitexpr.si_units import m, s
+from numpy import array_equal
+
+from unitexpr.si_units import m, s, SiUnit
 from unitexpr.unit_array import UnitArray
 from unitexpr.errors import OperationNotSupported
+
+
+cm = SiUnit('cm','centimeter', 'length', expr = 1e-2*m)
 
 a = UnitArray(shape=(2, 2))
 a.fill(10.0)
@@ -39,6 +44,18 @@ class TestUnitArray:
 
     def test_add(self):
         assert (m1 + m1).unit == m
+        A = UnitArray((2,2), unit = m)
+        A.fill(1.0)
+        B = UnitArray((2,2), unit = cm)
+        B.fill(10.0)
+
+        C = A + B
+        assert C.unit == m
+        assert C[0,0] == 1.1
+
+        D = B + A
+        assert D.unit == cm
+        assert D[0,0] == 110
 
     def test_add_incompat(self):
         with pytest.raises(OperationNotSupported):
@@ -46,6 +63,19 @@ class TestUnitArray:
 
     def test_sub(self):
         assert (s1 - s1).unit == s
+
+        A = UnitArray((2,2), unit = m)
+        A.fill(1.0)
+        B = UnitArray((2,2), unit = cm)
+        B.fill(10.0)
+
+        C = A - B
+        assert C.unit == m
+        assert C[0,0] == 0.9
+
+        D = B - A
+        assert D.unit == cm
+        assert D[0,0] == -90
 
     def test_sub_incompat(self):
         with pytest.raises(OperationNotSupported):
