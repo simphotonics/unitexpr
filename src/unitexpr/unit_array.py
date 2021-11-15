@@ -105,18 +105,32 @@ class UnitArray(np.ndarray):
             )
 
     def __add__(self, other):
-        if self.unit == other.unit:
+        scaling_factor = self.unit.scaling_factor(other.unit)
+        if scaling_factor == 1.0:
             obj = super().__add__(other)
             obj.unit = self.unit
             return obj
-        raise OperationNotSupported(self, other, "+")
+
+        if not scaling_factor:
+            raise OperationNotSupported(self, other, "+")
+
+        obj = super().__add__(other * scaling_factor)
+        obj.unit = self.unit
+        return obj
 
     def __sub__(self, other):
-        if self.unit == other.unit:
+        scaling_factor = self.unit.scaling_factor(other.unit)
+        if scaling_factor == 1.0:
             obj = super().__sub__(other)
             obj.unit = self.unit
             return obj
-        raise OperationNotSupported(self, other, "+")
+
+        if not scaling_factor:
+            raise OperationNotSupported(self, other, "-")
+
+        obj = super().__sub__(other * scaling_factor)
+        obj.unit = self.unit
+        return obj
 
     def __mul__(self, other):
         """
