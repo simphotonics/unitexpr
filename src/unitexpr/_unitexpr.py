@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from operator import add, neg, sub
-from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Tuple, Type
+from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Tuple, Type, Union
 
 from .decorators import protect
 from .errors import OperationNotSupported
@@ -141,18 +141,6 @@ class UnitExprBase(
             factor,
             tuple(base_exponents),
             base_factor,
-        )
-
-    def scale(self, factor: float) -> UnitExprBase:
-        """
-        Returns a copy of the unit expression `self` scaled by `factor`.
-        """
-        return self.__class__(
-            terms=self.terms,
-            exponents=self.exponents,
-            factor=factor * self.factor,
-            base_exponents=self.base_exponents,
-            base_factor=factor * self.base_factor,
         )
 
     @classmethod
@@ -424,7 +412,7 @@ class UnitExprBase(
                 return self.one * other
 
             base_factor = other + self.base_factor
-            factor = base_factor / self.base_factor* self.factor
+            factor = base_factor / self.base_factor * self.factor
 
             return self.__class__(
                 self.terms,
@@ -448,7 +436,7 @@ class UnitExprBase(
                 return -other
 
             base_factor = self.base_factor - other.base_factor
-            factor = base_factor / self.base_factor* self.factor
+            factor = base_factor / self.base_factor * self.factor
 
             return self.__class__(
                 self.terms,
@@ -467,7 +455,7 @@ class UnitExprBase(
             if self.base_factor == 0 or not self.terms:
                 return self.one * base_factor
 
-            factor = base_factor / self.base_factor*self.factor
+            factor = base_factor / self.base_factor * self.factor
 
             return self.__class__(
                 self.terms,
@@ -491,7 +479,7 @@ class UnitExprBase(
                 return -self
 
             base_factor = other.base_factor - self.base_factor
-            factor = base_factor / other.base_factor*other.factor
+            factor = base_factor / other.base_factor * other.factor
 
             return self.__class__(
                 other.terms,
@@ -510,7 +498,7 @@ class UnitExprBase(
             if self.base_factor == 0 or not self.terms:
                 return self.one * base_factor
 
-            factor = base_factor / self.base_factor*self.factor
+            factor = base_factor / self.base_factor * self.factor
 
             return self.__class__(
                 self.terms,
@@ -640,6 +628,27 @@ class UnitExprBase(
             )
 
         raise OperationNotSupported(other, self, "/")
+
+
+    def scaling_factor(self, other) -> Union[float, None]:
+        """
+        Returns the scaling factor that converts the unit expression
+        `self` to the unit expression or unit `other`.
+
+        Returns `None` if `self` cannot be converted to `other`
+        by multiplication with a number of type `int` or `float`.
+        """
+        if isinstance(other, self.valid_types):
+            if other.base_exponents != self.base_exponents:
+                return None
+            return other.base_factor / self.base_factor
+
+        if isinstance(other, (int, float)):
+            if self.base_exponents != self.base_exponents_zero:
+                return None
+            return other / self.base_factor
+
+        return None
 
     def __pow__(self, other: int):
         """

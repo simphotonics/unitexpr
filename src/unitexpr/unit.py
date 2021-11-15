@@ -6,7 +6,7 @@ Module providing the classes:
 """
 
 from operator import add, sub, neg
-from typing import Any, Iterable, NamedTuple, Tuple
+from typing import Any, Iterable, NamedTuple, Tuple, Union
 
 
 from .decorators import protect
@@ -656,6 +656,26 @@ class UnitBase(
             )
 
         raise OperationNotSupported(other, self, "/")
+
+    def scaling_factor(self, other) -> Union[float, None]:
+        """
+        Returns the scaling factor that converts the unit 
+        `self` to the unit expression or unit `other`.
+
+        Returns `None` if `self` cannot be converted to `other`
+        by multiplication with a number of type `int` or `float`.
+        """
+        if isinstance(other, self.valid_types):
+            if other.base_exponents != self.base_exponents:
+                return None
+            return other.base_factor / self.base_factor
+
+        if isinstance(other, (int, float)):
+            if self.base_exponents != self.base_exponents_zero:
+                return None
+            return other / self.base_factor
+
+        return None
 
     def __pow__(self, other: int) -> UnitExprBase:
         """
