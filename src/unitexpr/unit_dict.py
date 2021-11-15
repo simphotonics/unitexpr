@@ -117,9 +117,7 @@ class ImmutableUnitDict(UnitDict):
     Note: The value type must implement the operators above.
     """
 
-    def __add__(
-        self: ImmutableUnitDict, other: UnitDict
-    ) -> ImmutableUnitDict:
+    def __add__(self: ImmutableUnitDict, other: UnitDict) -> ImmutableUnitDict:
         """
         Adds the values of entries with the same key and returns the resulting
         dictionary. Keys with value zero are deleted.

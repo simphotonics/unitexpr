@@ -659,7 +659,7 @@ class UnitBase(
 
     def scaling_factor(self, other) -> Union[float, None]:
         """
-        Returns the scaling factor that converts the unit 
+        Returns the scaling factor that converts the unit
         `self` to the unit expression or unit `other`.
 
         Returns `None` if `self` cannot be converted to `other`
