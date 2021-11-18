@@ -30,6 +30,9 @@ class SiUnit(UnitBase, metaclass=UnitMeta, unit_symbols=unit_symbols):
 
 # Base units
 m = SiUnit.m
+"""
+Base unit: Meter
+"""
 s = SiUnit.s
 kg = SiUnit.kg
 A = SiUnit.A

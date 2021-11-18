@@ -2,18 +2,23 @@
 Numpy array with the additional attribute `unit`.
 """
 
+from __future__ import annotations
+
 from typing import Union
 
 import numpy as np
 
-from .unit import UnitBase, UnitExprBase
 from .errors import OperationNotSupported
+from .unit import UnitBase, UnitExprBase
 
 
-class UnitArray(np.ndarray):
+class QArray(np.ndarray):
     """
-    Sub-class of ndarray with an additional instance
-    attribute representing a unit.
+    An array with elements representing a quantity that can be
+    described by a numerical value and a unit.
+
+    `QArray` is a sub-class of ndarray with the additional instance
+    attribute `unit`.
 
     Implementation closely follows:
     https://numpy.org/devdocs/user/basics.subclassing.html#basics-subclassing
@@ -33,7 +38,7 @@ class UnitArray(np.ndarray):
         unit=1.0,
     ):
         # The call in the next line triggers a call to
-        # UnitArray.__array_finalize__
+        # QArray.__array_finalize__
         obj = super().__new__(
             subtype, shape, dtype, buffer, offset, strides, order
         )
@@ -42,29 +47,29 @@ class UnitArray(np.ndarray):
 
     def __array_finalize__(self, obj):
         # ``self`` is a new object resulting from
-        # ndarray.__new__(UnitArray, ...), therefore it only has
+        # ndarray.__new__(QArray, ...), therefore it only has
         # attributes that the ndarray.__new__ constructor gave it -
         # i.e. those of a standard ndarray.
         #
         # We could have got to the ndarray.__new__ call in 3 ways:
-        # From an explicit constructor - e.g. UnitArray():
+        # From an explicit constructor - e.g. QArray():
         #    obj is None
-        #    (we're in the middle of the UnitArray.__new__
+        #    (we're in the middle of the QArray.__new__
         #    constructor, and self.unit will be set when we return to
-        #    UnitArray.__new__)
+        #    QArray.__new__)
         if obj is None:
             return
-        # From view casting - e.g arr.view(UnitArray):
+        # From view casting - e.g arr.view(QArray):
         #    obj is arr
-        #    (type(obj) can be UnitArray)
+        #    (type(obj) can be QArray)
         # From new-from-template - e.g infoarr[:3]
-        #    type(obj) is UnitArray
+        #    type(obj) is QArray
         #
         # Note that it is here, rather than in the __new__ method,
         # that we set the default value for 'unit', because this
         # method sees all creation of default objects - with the
-        # UnitArray.__new__ constructor, but also with
-        # arr.view(UnitArray).
+        # QArray.__new__ constructor, but also with
+        # arr.view(QArray).
         self.__unit = getattr(obj, "unit", 1.0)
 
     def __str__(self) -> str:
@@ -104,7 +109,7 @@ class UnitArray(np.ndarray):
                 + f"or a unit! Found: {type(value)}: {value}."
             )
 
-    def __add__(self, other):
+    def __add__(self, other) -> QArray:
         scaling_factor = self.unit.scaling_factor(other.unit)
         if scaling_factor == 1.0:
             obj = super().__add__(other)
@@ -118,7 +123,7 @@ class UnitArray(np.ndarray):
         obj.unit = self.unit
         return obj
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> QArray:
         scaling_factor = self.unit.scaling_factor(other.unit)
         if scaling_factor == 1.0:
             obj = super().__sub__(other)
@@ -132,7 +137,7 @@ class UnitArray(np.ndarray):
         obj.unit = self.unit
         return obj
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> QArray:
         """
         Returns the result of multiplying the united ndarray `self`
         with `other`.
@@ -158,7 +163,7 @@ class UnitArray(np.ndarray):
             obj.unit = self.unit
         return obj
 
-    def __rmul__(self, other):
+    def __rmul__(self, other) -> QArray:
         """
         Returns the result of multiplying `other` with the united array
         `self`.
@@ -184,7 +189,7 @@ class UnitArray(np.ndarray):
             obj.unit = self.unit
         return obj
 
-    def __truediv__(self, other):
+    def __truediv__(self, other) -> QArray:
         """
         Returns the result of dividing the united ndarray `self`
         with `other`.
@@ -235,22 +240,22 @@ class UnitArray(np.ndarray):
     #         obj.unit = self.unit**-1
     #     return obj
 
-    def __pow__(self, other: Union[float, int]):
+    def __pow__(self, other: Union[float, int]) -> QArray:
         obj = super().__pow__(other)
         obj.unit = self.unit.__pow__(other)
         return obj
 
-    def __abs__(self):
+    def __abs__(self) -> QArray:
         obj = super().__abs__()
         obj.unit = self.unit
         return obj
 
-    def __neg__(self) -> "UnitArray":
+    def __neg__(self) -> QArray:
         obj = super().__neg__()
         obj.unit = self.unit
         return obj
 
-    def __pos__(self) -> "UnitArray":
+    def __pos__(self) -> QArray:
         obj = super().__pos__()
         obj.unit = self.unit.__pos__()
         return obj

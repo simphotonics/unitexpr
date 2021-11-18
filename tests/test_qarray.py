@@ -3,23 +3,23 @@ import pytest
 from numpy import array_equal
 
 from unitexpr.si_units import m, s, SiUnit
-from unitexpr.unit_array import UnitArray
+from unitexpr import QArray
 from unitexpr.errors import OperationNotSupported
 
 
 cm = SiUnit('cm','centimeter', 'length', expr = 1e-2*m)
 
-a = UnitArray(shape=(2, 2))
+a = QArray(shape=(2, 2))
 a.fill(10.0)
 
-m1 = UnitArray(shape=(2, 2), unit=m)
+m1 = QArray(shape=(2, 2), unit=m)
 m1.fill(20.0)
 
-s1 = UnitArray(shape=(2, 2), unit=s)
+s1 = QArray(shape=(2, 2), unit=s)
 s1.fill(30.0)
 
 
-class TestUnitArray:
+class TestQArray:
     def test_default(self):
         assert a.unit == 1.0
         assert a.unit == m.expr_type.one
@@ -44,9 +44,9 @@ class TestUnitArray:
 
     def test_add(self):
         assert (m1 + m1).unit == m
-        A = UnitArray((2,2), unit = m)
+        A = QArray((2,2), unit = m)
         A.fill(1.0)
-        B = UnitArray((2,2), unit = cm)
+        B = QArray((2,2), unit = cm)
         B.fill(10.0)
 
         C = A + B
@@ -64,9 +64,9 @@ class TestUnitArray:
     def test_sub(self):
         assert (s1 - s1).unit == s
 
-        A = UnitArray((2,2), unit = m)
+        A = QArray((2,2), unit = m)
         A.fill(1.0)
-        B = UnitArray((2,2), unit = cm)
+        B = QArray((2,2), unit = cm)
         B.fill(10.0)
 
         C = A - B
