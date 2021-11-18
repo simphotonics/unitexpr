@@ -178,7 +178,7 @@ class ImmutableUnitDict(UnitDict):
 
     def filter_value(self, value) -> ImmutableUnitDict:
         """
-        Remove all entries with matching `value` and returns the resulting
+        Removes all entries with matching `value` and returns the resulting
         dictionary.
 
         Note: Returns a new object.
@@ -190,39 +190,60 @@ class ImmutableUnitDict(UnitDict):
         return ImmutableUnitDict(obj)
 
     def __setitem__(self, key, value) -> None:
+        """
+        Not supported. Immutable object.
+        """
         raise TypeError(
             f"'{self.__class__.__name__}' object does not "
             + "support item assignment."
         )
 
     def __delitem__(self, value) -> None:
+        """
+        Not supported. Immutable object.
+        """
         raise TypeError(
             f"'{self.__class__.__name__}' object does not "
             + "support item deletion."
         )
 
     def clear(self) -> None:
+        """
+        Not supported. Immutable object.
+        """
         raise TypeError(
             f"'{self.__class__.__name__}' object " + "cannot be cleared."
         )
 
     def update(self, *args, **kwargs) -> None:
+        """
+        Not supported. Immutable object.
+        """
         raise TypeError(
             f"'{self.__class__.__name__}' object " + "cannot be updated."
         )
 
     def setdefault(self, key, default) -> None:
+        """
+        Not supported. Immutable object.
+        """
         raise TypeError(
             f"'{self.__class__.__name__}' object does not "
             + "support default values."
         )
 
     def pop(self) -> None:
+        """
+        Not supported. Immutable object.
+        """
         raise TypeError(
             f"'{self.__class__.__name__}' object does not " + "support `pop`."
         )
 
     def popitem(self) -> None:
+        """
+        Not supported. Immutable object.
+        """
         raise TypeError(
             f"'{self.__class__.__name__}' object does not "
             + "support `popitem`."
