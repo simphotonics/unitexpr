@@ -18,8 +18,6 @@ compile:
 
 
 site:
-			cp -r README.md src
-			cp -r CHANGELOG.md src
 			portray as_html
 
 init:
