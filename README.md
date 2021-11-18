@@ -36,7 +36,7 @@ $ pip install unitexpr
 
 ## Usage
 
-The sections below demonstrates how to sub-class [`UnitBase`][UnitBase]
+The sections below demonstrate how to sub-class [`UnitBase`][UnitBase]
 to define unit systems and united numpy arrays.
 
 ### Unit Symbols
@@ -55,18 +55,18 @@ unit_symbols = (
             UnitSymbol(symbol='kg','name'='kilogram',quantity='weight')
         )
 ```
-The attribute `symbol` must be a valid Python identifier.
+Note: The attribute `symbol` must be a valid Python identifier.
 
 ### Defining a Unit System
 
 A custom unit system can be defined by sub-classing [`UnitBase`][UnitBase]
 and specifying the meta-class [`UnitMeta`][UnitMeta], and the
-custom base unit symbols:
+custom base unit symbols in the class constructor.
 
 ```Python
 from unitexpr import UnitBase, UnitMeta
 
-# Defining a unit system using the base unit symbol specified above.
+# Defining a unit system using the base unit symbols specified above.
 # Note the use of the metaclass `UnitMeta`.
 class MetricUnit(UnitBase, metaclass=UnitMeta, unit_symbols=unit_symbols):
     pass
@@ -82,12 +82,9 @@ assert type(m) == MetricUnit
 # Declaring derived units
 c = MetricUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)
 ```
-The class definition requires a tuple with entries of type
-[`UnitSymbol`][UnitSymbol]
-which are used to specify the base unit symbols.
-
 The base units are constructed during the instantiation of the meta-class
-and are available as class attributes.
+and are available as class attributes. In the example above the
+base units are `m`, `s`, and `kg`.
 
 Derived units and unit expressions can be constructed using the operations:
 - multiplication: `J = MetricUnit('J', 'joule', 'energy', expr=N*m)`
@@ -250,7 +247,7 @@ Contributions are welcome.
 
 [UnitBase]:http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitBase
 
-[UnitBase]:http://unitexpr.simphotonics.com/reference/unitexpr/_unit_expr/#UnitExprBase
+[UnitExprBase]:http://unitexpr.simphotonics.com/reference/unitexpr/_unit_expr/#UnitExprBase
 
 [UnitMeta]:http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitMeta
 
