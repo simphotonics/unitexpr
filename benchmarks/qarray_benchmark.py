@@ -1,13 +1,11 @@
-from numpy import ndarray, array_equal
+from numpy import array_equal, ndarray
 
-from unitexpr.si_units import m, s, SiUnit
-from unitexpr.unit_array import UnitArray
-
-from scimath.units.length import meter, centimeter
+from scimath.units.length import centimeter, meter
 from scimath.units.time import second
-from scimath.units.mass import kilogram
-
 from scimath.units.unit_array import UnitArray as UnitArraySci
+
+from unitexpr.qarray import QArray
+from unitexpr.si_units import SiUnit, m, s
 
 cm = SiUnit("cm", "centimeter", "length", 1.0e-2 * m)
 
@@ -17,16 +15,16 @@ ny = 200
 A = ndarray(shape=(nx, ny))
 A.fill(10.0)
 
-M = UnitArray(shape=(nx, ny), unit=m ** 2)
+M = QArray(shape=(nx, ny), unit=m ** 2)
 M.fill(10.0)
 
-C = UnitArray(shape=(nx, ny), unit=cm ** 2)
+C = QArray(shape=(nx, ny), unit=cm ** 2)
 C.fill(1.0e4)
 
-S = UnitArray(shape=(nx, ny), unit=s)
+S = QArray(shape=(nx, ny), unit=s)
 S.fill(10.0)
 
-R = UnitArray(shape=(nx, ny), unit=m ** 2)
+R = QArray(shape=(nx, ny), unit=m ** 2)
 R.fill(11)
 
 
@@ -39,7 +37,7 @@ R1 = UnitArraySci(R, units=meter * meter)
 
 
 class TestAddition:
-    def test_add_unitexpr_units(self, benchmark):
+    def test_add_qarray(self, benchmark):
         def add():
             return M + C
 
@@ -47,7 +45,7 @@ class TestAddition:
         assert add().unit == m ** 2
         assert array_equal(add(), R)
 
-    def test_add_scimath_units(self, benchmark):
+    def test_add_unit_array(self, benchmark):
         def add():
             return M1 + C1
 
@@ -57,14 +55,14 @@ class TestAddition:
 
 
 class TestMul:
-    def test_mult_unitexpr_units(self, benchmark):
+    def test_mult_qarray(self, benchmark):
         def expr():
             return M / S ** 2
 
         benchmark.pedantic(expr, iterations=500, rounds=2)
         assert expr().unit == m ** 2 * s ** -2
 
-    def test_mult_scimath_units(self, benchmark):
+    def test_mult_unit_array(self, benchmark):
         def expr():
             return M1 / (S1 ** 2)
 
