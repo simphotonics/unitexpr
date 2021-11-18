@@ -139,7 +139,9 @@ print(v2) # Prints:  874031.4897959183*c_sound
 
 To support scientific calculation
 the package includes [`QArray`][QArray]
-an extension of numpy's `ndarray` whose entries represent
+an extension of numpy's `ndarray`.
+
+The entries of a [`QArray`][QArray] represent
 physical *quantities* that can be expressed in terms of a
 number and a unit.  [`QArray`][QArray] is an `ndarray` with
 the additional instance attribute `unit` (with default value 1.0).
