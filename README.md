@@ -135,13 +135,14 @@ print(v2) # Prints:  874031.4897959183*c_sound
 ```
 
 
-### United Numpy Arrays
+### Quantity Arrays
 
 To support scientific calculation
-the package also includes a united array.
-The class [`QArray`][QArray]
-extends numpy's `ndarray` adding the additional
-instance attribute `unit` (with default value 1.0).
+the package includes [`QArray`][QArray]
+an extension of numpy's `ndarray` whose entries represent
+physical *quantities* that can be expressed in terms of a
+number and a unit.  [`QArray`][QArray] is an `ndarray` with
+the additional instance attribute `unit` (with default value 1.0).
 
 ```Python
 from math import pi
