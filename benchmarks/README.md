@@ -1,7 +1,8 @@
 # Unit Expressions - Benchmark
 
 The package [`unitexpr`][unitexpr] provides classes and meta-classes that
-make it trivial to define custom unit systems and united [`numpy`][numpy] arrays.
+make it trivial to define custom unit systems and [`numpy`][numpy] arrays
+with unit support.
 
 A search on [pypi][pypi] shows that there are a few packages available
 for doing unit analysis. The most notable I found is [`scimath`][scimath],
@@ -17,8 +18,9 @@ Note: To run the benchmarks one must install the packages:
 
 ## Unit Expressions
 
-To run the benchmarks from the root directory of the package
-[`unitexpr`][unitexpr] use the command:
+To run the benchmarks clone the repository available at
+[`unitexpr`][unitexpr], navigate to the package root directory
+and use the command:
 ```Console
 $ pytest benchmarks/unit_benchmark.py
 ```
@@ -27,18 +29,18 @@ An excerpt of a sample output (produced on a PC with 32GB RAM memory
 and an Intel Core i5-6260U CPU running at 1.80GHz) is displayed below:
 
 ```Console
------------------------------ benchmark: 6 tests ------------------------------------------
-Name (time in ns)                   Mean              StdDev             Rounds  Iterations
--------------------------------------------------------------------------------------------
-test_compare_scimath_units      378.0144 (1.0)       26.0803 (1.0)            4       20000
-test_compare_unitexpr_units     474.4168 (1.26)      77.8908 (2.99)           4       20000
+-------------------------------- benchmark: 6 tests --------------------------------------
+Name (time in ns)                   Mean              StdDev            Rounds  Iterations
+------------------------------------------------------------------------------------------
+test_compare_scimath_units      384.6454 (1.0)       49.9329 (1.0)           4       20000
+test_compare_unitexpr_units     455.8162 (1.19)      62.7644 (1.26)          4       20000
 
-test_add_scimath_units        3,737.2815 (9.89)     449.5742 (17.24)          4       20000
-test_add_unitexpr_units       5,411.9090 (14.32)    678.7292 (26.02)          4       20000
+test_add_scimath_units        3,698.7334 (9.62)     199.3424 (3.99)          4       20000
+test_add_unitexpr_units       5,527.3140 (14.37)    666.3501 (13.34)         4       20000
 
-test_mult_scimath_units       4,308.2672 (11.40)    209.4878 (8.03)           4       20000
-test_mult_unitexpr_units      5,813.6167 (15.38)    278.0202 (10.66)          4       20000
--------------------------------------------------------------------------------------------
+test_mult_scimath_units       4,363.7948 (11.34)    204.8872 (4.10)          4       20000
+test_mult_unitexpr_units      5,780.7208 (15.03)    205.6521 (4.12)          4       20000
+------------------------------------------------------------------------------------------
 ```
 
 As the test runs above show [`scimath`][scimath] unit comparisons and unit
@@ -59,7 +61,7 @@ base units *and* derived units.
 
 To support scientific calculation
 the package also includes a united array.
-The class `UnitArray`
+The class `QArray`
 extends numpy's `ndarray` adding the additional
 instance attribute `unit` (with default value 1.0).
 
@@ -70,22 +72,22 @@ provided by the package [`scimath`][scimath].
 To run the benchmarks from the root directory of the
  package [`unitexpr`][unitexpr] use the command:
 ```Console
-$ pytest benchmarks/unit_array_benchmark.py
+$ pytest benchmarks/qarray_benchmark.py
 ```
 
 A sample output (not all columns are shown) produced on a PC with 32GB RAM memory
 and an Intel Core i5-6260U CPU running at 1.80GHz is displayed below:
 
 ```Console
---------------------------- benchmark: 4 tests -----------------------------------
-Name (time in us)             Mean             StdDev           Rounds  Iterations
-----------------------------------------------------------------------------------
-test_mult_scimath_units    69.5785 (1.00)     11.1675 (1.23)         2         500
-test_mult_unitexpr_units   69.3301 (1.0)      10.0463 (1.11)         2         500
+---------------------------- benchmark: 4 tests ----------------------------
+Name (time in us)        Mean            StdDev           Rounds  Iterations
+----------------------------------------------------------------------------
+test_mult_qarray      67.6647 (1.0)      8.3541 (2.14)         2         500
+test_mult_unit_array  67.8123 (1.00)     7.5690 (1.94)         2         500
 
-test_add_unitexpr_units    76.7611 (1.11)      9.0428 (1.0)          2         500
-test_add_scimath_units     94.3358 (1.36)     16.3649 (1.81)         2         500
-----------------------------------------------------------------------------------
+test_add_qarray       72.1900 (1.07)     3.9069 (1.0)          2         500
+test_add_unit_array   86.6087 (1.28)    12.7050 (3.25)         2         500
+----------------------------------------------------------------------------
 ```
 
 To produce the benchmarks the following arrays were constructed:
@@ -94,7 +96,7 @@ To produce the benchmarks the following arrays were constructed:
 from numpy import ndarray, array_equal
 
 from unitexpr.si_units import m, s, SiUnit
-from unitexpr.unit_array import UnitArray
+from unitexpr.qarray import QArray
 
 from scimath.units.length import meter, centimeter
 from scimath.units.time import second
@@ -110,16 +112,16 @@ ny = 200
 A = ndarray(shape=(nx, ny))
 A.fill(10.0)
 
-M = UnitArray(shape=(nx, ny), unit=m ** 2)
+M = QArray(shape=(nx, ny), unit=m ** 2)
 M.fill(10.0)
 
-C = UnitArray(shape=(nx, ny), unit=cm ** 2)
+C = QArray(shape=(nx, ny), unit=cm ** 2)
 C.fill(1.0e4)
 
-S = UnitArray(shape=(nx, ny), unit=s)
+S = QArray(shape=(nx, ny), unit=s)
 S.fill(10.0)
 
-R = UnitArray(shape=(nx, ny), unit=m ** 2)
+R = QArray(shape=(nx, ny), unit=m ** 2)
 R.fill(11)
 ```
 
