@@ -9,7 +9,7 @@ from operator import add, sub, neg
 from typing import Any, Iterable, NamedTuple, Tuple, Union
 
 
-from .decorators import protect
+from lockattrs import protect
 from .errors import OperationNotSupported
 from .unit_symbol import UnitSymbol
 

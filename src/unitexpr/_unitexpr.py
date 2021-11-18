@@ -1,9 +1,13 @@
+"""
+Provides the classes `UnitExprMeta` and `UnitExprBase`.
+"""
+
 from __future__ import annotations
 
 from operator import add, neg, sub
 from typing import TYPE_CHECKING, Any, Iterable, NamedTuple, Tuple, Type, Union
 
-from .decorators import protect
+from lockattrs import protect
 from .errors import OperationNotSupported
 from .unit_dict import UnitDict
 from .unit_symbol import UnitSymbol
@@ -66,7 +70,7 @@ class UnitExprBase(
     ),
 ):
     """
-    Class representing an expression (multiplication) of
+    Immutable class representing an expression (multiplication) of
     units and real numbers.
     """
 
