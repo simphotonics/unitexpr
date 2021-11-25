@@ -41,7 +41,7 @@ class TestAddition:
         def add():
             return M + C
 
-        benchmark.pedantic(add, iterations=500, rounds=2)
+        benchmark.pedantic(add, iterations=1000, rounds=1)
         assert add().unit == m ** 2
         assert array_equal(add(), R)
 
@@ -49,7 +49,7 @@ class TestAddition:
         def add():
             return M1 + C1
 
-        benchmark.pedantic(add, iterations=500, rounds=2)
+        benchmark.pedantic(add, iterations=1000, rounds=1)
         assert add().units == meter ** 2
         assert array_equal(add(), R1)
 
@@ -59,12 +59,12 @@ class TestMul:
         def expr():
             return M / S ** 2
 
-        benchmark.pedantic(expr, iterations=500, rounds=2)
+        benchmark.pedantic(expr, iterations=1000, rounds=1)
         assert expr().unit == m ** 2 * s ** -2
 
     def test_mult_unit_array(self, benchmark):
         def expr():
             return M1 / (S1 ** 2)
 
-        benchmark.pedantic(expr, iterations=500, rounds=2)
+        benchmark.pedantic(expr, iterations=1000, rounds=1)
         assert expr().units == meter ** 2 / second ** 2
