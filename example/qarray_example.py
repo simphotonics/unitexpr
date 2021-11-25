@@ -10,7 +10,7 @@ print("q = ")
 print(q)
 print()
 
-a = q*m
+a = q * m
 print("a = q*m = ")
 print(a)
 print()
@@ -23,11 +23,11 @@ print(b)
 print()
 
 print("a / b =")
-print(a/b)
+print(a / b)
 print()
 
 print("(a / b)**2 =")
-print((a/b) ** 2)
+print((a / b) ** 2)
 print()
 
 Pi = SiUnit("Pi", "Pi", "number", pi * SiUnit.expr_type.one)
