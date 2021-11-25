@@ -5,8 +5,10 @@ Numpy array with the additional attribute `unit`.
 from __future__ import annotations
 
 from typing import Union
+from numbers import Real, Number
 
 import numpy as np
+from numpy.core._exceptions import UFuncTypeError
 
 from .errors import OperationNotSupported
 from .unit import UnitBase, UnitExprBase
@@ -72,6 +74,15 @@ class QArray(np.ndarray):
         # arr.view(QArray).
         self.__unit = getattr(obj, "unit", 1.0)
 
+    @classmethod
+    def from_input(cls, input, unit=1.0) -> QArray:
+        """Constructs a `QArray` from an existing ndarray
+        or from a (nested) sequence of entries.
+        """
+        obj = np.asarray(input).view(cls)
+        obj.unit = unit
+        return obj
+
     def __str__(self) -> str:
         return super().__str__() + " unit: " + str(self.unit)
 
@@ -80,86 +91,89 @@ class QArray(np.ndarray):
 
     @property
     def unit(self):
-        """
-        Returns the unit of the object.
-        """
+        """Returns the unit of the object."""
         return self.__unit
 
     @unit.setter
     def unit(self, value) -> None:
-        if isinstance(value, self._unit_types):
-            if value.factor == 1.0:
-                self.__unit = value
-            elif value.factor == 0.0:
-                raise ValueError(
-                    f"Could not set unit with zero magnitude: {value}."
-                )
-            else:
-                self *= value.factor
-                self.__unit = value / value.factor
-        elif isinstance(value, (float, int)):
-            if value == 1.0:
-                self.__unit = value
-            else:
-                self *= value
-                self.__unit = 1.0
-        else:
-            raise TypeError(
-                "Could not set array unit. Expected a numeric value "
-                + f"or a unit! Found: {type(value)}: {value}."
+        factor = value.factor if isinstance(value, self._unit_types) else value
+
+        if factor == 1.0:
+            self.__unit = value
+            return None
+
+        if factor == 0.0:
+            raise ValueError(
+                f"Could not set unit with zero magnitude: {value}."
             )
 
+        try:
+            self *= factor
+            self.__unit = value / factor
+        except UFuncTypeError:
+            cfactor = self.dtype.type(factor)
+            if cfactor == factor:
+                self *= cfactor
+                self.__unit = value / factor
+            else:
+                # If factor can not be safely converted to dtype do not
+                # normalize unit:
+                self.__unit = value
+
     def __add__(self, other) -> QArray:
-        scaling_factor = self.unit.scaling_factor(other.unit)
-        if scaling_factor == 1.0:
-            obj = super().__add__(other)
-            obj.unit = self.unit
-            return obj
+        # If units match simply add arrays.
+        if self.unit == other.unit:
+            return super().__add__(other)
 
-        if not scaling_factor:
-            raise OperationNotSupported(self, other, "+")
+        alpha = other.unit / self.unit
 
-        obj = super().__add__(other * scaling_factor)
-        obj.unit = self.unit
-        return obj
+        if isinstance(alpha, Real):
+            return super().__add__(other * alpha)
+
+        if (
+            isinstance(alpha, UnitExprBase)
+            and alpha.base_exponents == alpha.base_exponents_zero
+        ):
+            return super().__add__(other * alpha.base_factor)
+
+        raise OperationNotSupported(self, other, "+")
 
     def __sub__(self, other) -> QArray:
-        scaling_factor = self.unit.scaling_factor(other.unit)
-        if scaling_factor == 1.0:
-            obj = super().__sub__(other)
-            obj.unit = self.unit
-            return obj
+        # If units match simply subtract arrays.
+        if self.unit == other.unit:
+            return super().__sub__(other)
 
-        if not scaling_factor:
-            raise OperationNotSupported(self, other, "-")
+        alpha = other.unit / self.unit
 
-        obj = super().__sub__(other * scaling_factor)
-        obj.unit = self.unit
-        return obj
+        if isinstance(alpha, Real):
+            return super().__sub__(other * alpha)
+
+        if (
+            isinstance(alpha, UnitExprBase)
+            and alpha.base_exponents == alpha.base_exponents_zero
+        ):
+            return super().__sub__(other * alpha.base_factor)
+
+        raise OperationNotSupported(self, other, "-")
 
     def __mul__(self, other) -> QArray:
         """
         Returns the result of multiplying the united ndarray `self`
         with `other`.
         """
-        if isinstance(other, UnitBase):
+        if isinstance(other, Number):
+            return super().__mul__(other)
+
+        if isinstance(other, self._unit_types):
             obj = self.copy()
             obj.unit = self.unit * other
-            return obj
-
-        if isinstance(other, UnitExprBase):
-            if other.factor == 1.0:
-                obj = self.copy()
-                obj.unit = self.unit * other
-            else:
-                obj = self.__mul__(other.factor)
-                obj.unit = self.unit * other.unit.scale(1.0 / other.factor)
             return obj
 
         obj = super().__mul__(other)
         try:
             obj.unit = self.unit * other.unit
         except AttributeError:
+            # Enable multiplication with ndarray (without units)
             obj.unit = self.unit
         return obj
 
@@ -168,21 +182,15 @@ class QArray(np.ndarray):
         Returns the result of multiplying `other` with the united array
         `self`.
         """
-        if isinstance(other, UnitBase):
+        if isinstance(other, Number):
+            return super().__rmul__(other)
+
+        if isinstance(other, self._unit_types):
             obj = self.copy()
             obj.unit = other * self.unit
             return obj
 
-        if isinstance(other, UnitExprBase):
-            if other.factor == 1.0:
-                obj = self.copy()
-                obj.unit = other * self.unit
-            else:
-                obj = self.__mul__(other.factor)
-                obj.unit = other.unit.scale(1.0 / other.factor) * self.unit
-            return obj
-
-        obj = super().__mul__(other)
+        obj = super().__rmul__(other)
         try:
             obj.unit = other.unit * self.unit
         except AttributeError:
@@ -194,18 +202,12 @@ class QArray(np.ndarray):
         Returns the result of dividing the united ndarray `self`
         with `other`.
         """
-        if isinstance(other, UnitBase):
+        if isinstance(other, Number):
+            return super().__truediv__(other)
+
+        if isinstance(other, self._unit_types):
             obj = self.copy()
             obj.unit = self.unit / other
-            return obj
-
-        if isinstance(other, UnitExprBase):
-            if other.factor == 1.0:
-                obj = self.copy()
-                obj.unit = self.unit / other
-            else:
-                obj = self.__truediv__(other.factor)
-                obj.unit = self.unit / other.unit.scale(other.factor)
             return obj
 
         obj = super().__truediv__(other)
@@ -259,3 +261,95 @@ class QArray(np.ndarray):
         obj = super().__pos__()
         obj.unit = self.unit.__pos__()
         return obj
+
+    def __le__(self, other) -> QArray:
+        if self.unit == other.unit:
+            obj = super().__le__(other)
+            obj.__unit = 1.0
+            return obj
+
+        alpha = other.unit / self.unit
+
+        if isinstance(alpha, Real):
+            obj = super().__le__(other * alpha)
+            obj.__unit = 1.0
+            return obj
+
+        if (
+            isinstance(alpha, UnitExprBase)
+            and alpha.base_exponents == alpha.base_exponents_zero
+        ):
+            obj = super().__le__(other * alpha.base_factor)
+            obj.__unit = 1.0
+            return obj
+
+        raise OperationNotSupported(self, other, "<=")
+
+    def __ge__(self, other) -> QArray:
+        if self.unit == other.unit:
+            obj = super().__ge__(other)
+            obj.__unit = 1.0
+            return obj
+
+        alpha = other.unit / self.unit
+
+        if isinstance(alpha, Real):
+            obj = super().__ge__(other * alpha)
+            obj.__unit = 1.0
+            return obj
+
+        if (
+            isinstance(alpha, UnitExprBase)
+            and alpha.base_exponents == alpha.base_exponents_zero
+        ):
+            obj = super().__ge__(other * alpha.base_factor)
+            obj.__unit = 1.0
+            return obj
+
+        raise OperationNotSupported(self, other, "<=")
+
+    def __gt__(self, other) -> QArray:
+        if self.unit == other.unit:
+            obj = super().__gt__(other)
+            obj.__unit = 1.0
+            return obj
+
+        alpha = other.unit / self.unit
+
+        if isinstance(alpha, Real):
+            obj = super().__gt__(other * alpha)
+            obj.__unit = 1.0
+            return obj
+
+        if (
+            isinstance(alpha, UnitExprBase)
+            and alpha.base_exponents == alpha.base_exponents_zero
+        ):
+            obj = super().__gt__(other * alpha.base_factor)
+            obj.__unit = 1.0
+            return obj
+
+        raise OperationNotSupported(self, other, "<=")
+
+    def __lt__(self, other) -> QArray:
+        if self.unit == other.unit:
+            obj = super().__lt__(other)
+            obj.__unit = 1.0
+            return obj
+
+        alpha = other.unit / self.unit
+
+        if isinstance(alpha, Real):
+            obj = super().__lt__(other * alpha)
+            obj.__unit = 1.0
+            return obj
+
+        if (
+            isinstance(alpha, UnitExprBase)
+            and alpha.base_exponents == alpha.base_exponents_zero
+        ):
+            obj = super().__lt__(other * alpha.base_factor)
+            obj.__unit = 1.0
+            return obj
+
+        raise OperationNotSupported(self, other, "<=")
