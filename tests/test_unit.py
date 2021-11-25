@@ -1,6 +1,6 @@
 import pytest
 
-from unitexpr.unit import *
+from unitexpr.errors import OperationNotSupported
 from unitexpr.si_units import m, s, c, SiUnit
 
 factor = 10.0
