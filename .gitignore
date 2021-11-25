@@ -131,6 +131,7 @@ dmypy.json
 # Vscode directory
 .vscode
 
-# README.md in src
+# Symbolic links in src (to build docs)
 src/README.md
 src/CHANGELOG.md
+src/BENCHMARK.md
