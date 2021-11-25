@@ -8,6 +8,7 @@ clean:
 			rm -rf src/$(PROJECT_NAME)/__pycache__
 			rm -rf dist/*
 			rm -rf src/*.egg-info
+			rm -rf site
 
 build:
 			pip install --upgrade build
