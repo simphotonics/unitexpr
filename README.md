@@ -100,7 +100,7 @@ Note: Units and unit expressions extend Python's `namedtuple` and as such are im
 
 ### Unit Expressions
 
-Unit expressions are objects with base class [`UnitExprBase`][UnitExprBase].
+Unit expressions are objects with base class `UnitExprBase`.
 Each unit system defines a unique unit expression type
 that is available as a class attribute
 (`.expr_type`). Valid unit expression terms for a given unit system are:
@@ -143,8 +143,13 @@ an extension of numpy's `ndarray`.
 
 The entries of a [`QArray`][QArray] represent
 physical *quantities* that can be expressed in terms of a
-number and a unit.  [`QArray`][QArray] is an `ndarray` with
-the additional instance attribute `unit` (with default value 1.0).
+number and a unit.  The constructor of [`QArray`][QArray]
+accepts the same parameters as the constructor of `ndarray` with
+the additional optional parameter `unit` (default value 1.0).
+
+To construct a [`QArray`][QArray] from an existing array or
+a sequence of entries use the class method `QArray.from_input`.
+
 
 ```Python
 from math import pi
@@ -164,7 +169,7 @@ print("a = q*m = ")
 print(a)
 print()
 
-b = QArray(shape=(2, 2), unit=s)
+b = QArray.from_input(q, unit=s)
 b.fill(2.0)
 
 print("b =")
@@ -246,12 +251,12 @@ Contributions are welcome.
 
 [unitexpr]: https://github.com/simphotonics/unitexpr
 
-[UnitSymbol]:http://unitexpr.simphotonics.com/reference/unitexpr/unit_symbol/#UnitSymbol
+[UnitSymbol]: http://unitexpr.simphotonics.com/reference/unitexpr/unit_symbol/#UnitSymbol
 
-[UnitBase]:http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitBase
+[UnitBase]: http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitBase
 
-[UnitExprBase]:http://unitexpr.simphotonics.com/reference/unitexpr/_unit_expr/#UnitExprBase
+[UnitExprBase]: http://unitexpr.simphotonics.com/reference/unitexpr/_unit_expr/#UnitExprBase
 
-[UnitMeta]:http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitMeta
+[UnitMeta]: http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitMeta
 
-[QArray]:http://unitexpr.simphotonics.com/reference/unitexpr/qarray/#QArray
+[QArray]: http://unitexpr.simphotonics.com/reference/unitexpr/qarray/#QArray
