@@ -1,4 +1,4 @@
-# Unit Expressions - Benchmark
+# Python  Unit Expressions - Benchmarks
 
 The package [`unitexpr`][unitexpr] provides classes and meta-classes that
 make it trivial to define custom unit systems and [`numpy`][numpy] arrays
@@ -145,7 +145,7 @@ As a rough estimate calculations involving units are of the order of microsecond
 tens of microseconds (depending on the complexitiy of the unit expression).
 
 The fraction of computational time spent on unit operations becomes negligable
-when performing calculations on large arrays with more than 10000 elements.
+when performing calculations on large arrays with more than 50000 elements.
 
 
 

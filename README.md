@@ -45,7 +45,7 @@ $ pip install unitexpr
 The sections below demonstrate how to sub-class [`UnitBase`][UnitBase]
 to define unit systems and united numpy arrays.
 
-### Unit Symbols
+### 1. Defining Base Units
 
 In order to define a unit system, one must first specify the
 base units. In the context of this package this is done using
@@ -63,7 +63,7 @@ unit_symbols = (
 ```
 Note: The attribute `symbol` must be a valid Python identifier.
 
-### Defining a Unit System
+### 2. Defining a Unit System
 
 A custom unit system can be defined by sub-classing [`UnitBase`][UnitBase]
 and specifying the meta-class [`UnitMeta`][UnitMeta], and the
@@ -104,7 +104,7 @@ the speed of light and its unit symbol was set to 'c'.
 
 Note: Units and unit expressions extend Python's `namedtuple` and as such are immutable.
 
-### Unit Expressions
+### 3. Unit Expressions
 
 Unit expressions are objects with base class `UnitExprBase`.
 Each unit system defines a unique unit expression type
@@ -141,7 +141,7 @@ print(v2) # Prints:  874031.4897959183*c_sound
 ```
 
 
-### Quantity Arrays
+### 4. Quantity Arrays
 
 To support scientific calculation
 the package includes [`QArray`][QArray]
@@ -247,7 +247,7 @@ Contributions are welcome.
 
 [issue tracker]: https://github.com/simphotonics/unitexpr/issues
 
-[benchmarks]: https://unitexpr.simphotonics.com/BENCHMARKS
+[benchmarks]: BENCHMARKS
 
 [numpy]: https://pypi.org/project/numpy/
 
