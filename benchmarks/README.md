@@ -29,18 +29,18 @@ An excerpt of a sample output (produced on a PC with 32GB RAM memory
 and an Intel Core i5-6260U CPU running at 1.80GHz) is displayed below:
 
 ```Console
--------------------------------- benchmark: 6 tests --------------------------------------
-Name (time in ns)                   Mean              StdDev            Rounds  Iterations
-------------------------------------------------------------------------------------------
-test_compare_scimath_units      384.6454 (1.0)       49.9329 (1.0)           4       20000
-test_compare_unitexpr_units     455.8162 (1.19)      62.7644 (1.26)          4       20000
+-------------------------------- benchmark: 6 tests -----------------------------------
+Name (time in ns)                   Mean              StdDev         Rounds  Iterations
+---------------------------------------------------------------------------------------
+test_compare_scimath_units      384.6454 (1.0)       49.9329 (1.0)        4       20000
+test_compare_unitexpr_units     455.8162 (1.19)      62.7644 (1.26)       4       20000
 
-test_add_scimath_units        3,698.7334 (9.62)     199.3424 (3.99)          4       20000
-test_add_unitexpr_units       5,527.3140 (14.37)    666.3501 (13.34)         4       20000
+test_add_scimath_units        3,698.7334 (9.62)     199.3424 (3.99)       4       20000
+test_add_unitexpr_units       5,527.3140 (14.37)    666.3501 (13.34)      4       20000
 
-test_mult_scimath_units       4,363.7948 (11.34)    204.8872 (4.10)          4       20000
-test_mult_unitexpr_units      5,780.7208 (15.03)    205.6521 (4.12)          4       20000
-------------------------------------------------------------------------------------------
+test_mult_scimath_units       4,363.7948 (11.34)    204.8872 (4.10)       4       20000
+test_mult_unitexpr_units      5,780.7208 (15.03)    205.6521 (4.12)       4       20000
+---------------------------------------------------------------------------------------
 ```
 
 As the test runs above show [`scimath`][scimath] unit comparisons and unit
@@ -79,15 +79,16 @@ A sample output (not all columns are shown) produced on a PC with 32GB RAM memor
 and an Intel Core i5-6260U CPU running at 1.80GHz is displayed below:
 
 ```Console
----------------------------- benchmark: 4 tests ----------------------------
-Name (time in us)        Mean            StdDev           Rounds  Iterations
-----------------------------------------------------------------------------
-test_mult_qarray      67.6647 (1.0)      8.3541 (2.14)         2         500
-test_mult_unit_array  67.8123 (1.00)     7.5690 (1.94)         2         500
+---------------------------------- benchmark: 4 tests -------------------
+Name (time in us)        Mean           StdDev         Rounds  Iterations
+-------------------------------------------------------------------------
+test_add_qarray       57.8951 (1.0)    13.2057 (4.12)       4         700
+test_add_unit_array   79.9009 (1.38)    5.3936 (1.68)       4         700
 
-test_add_qarray       72.1900 (1.07)     3.9069 (1.0)          2         500
-test_add_unit_array   86.6087 (1.28)    12.7050 (3.25)         2         500
-----------------------------------------------------------------------------
+test_mult_qarray      63.5769 (1.10)    3.2046 (1.0)        4         700
+test_mult_unit_array  63.4930 (1.10)    4.6779 (1.46)       4         700
+-------------------------------------------------------------------------
+
 ```
 
 To produce the benchmarks the following arrays were constructed:
@@ -112,17 +113,22 @@ ny = 200
 A = ndarray(shape=(nx, ny))
 A.fill(10.0)
 
-M = QArray(shape=(nx, ny), unit=m ** 2)
-M.fill(10.0)
+M = QArray.from_input(A, unit=m ** 2)
 
 C = QArray(shape=(nx, ny), unit=cm ** 2)
 C.fill(1.0e4)
 
-S = QArray(shape=(nx, ny), unit=s)
-S.fill(10.0)
+S = QArray.from_input(A, unit=s)
 
 R = QArray(shape=(nx, ny), unit=m ** 2)
 R.fill(11)
+
+
+A1 = UnitArraySci(A)
+M1 = UnitArraySci(A, units=meter * meter)
+C1 = UnitArraySci(C, units=centimeter * centimeter)
+S1 = UnitArraySci(A, units=second)
+R1 = UnitArraySci(R, units=meter * meter)
 ```
 
 The first set of benchmarks was produced by repeatedly calculating the
@@ -132,8 +138,8 @@ The second set of benchmarks was produced by calculating
 `M/(S**2)` and `M1/(S1**2)`.
 
 
-The results displayed above show that performance of
-`unitexpr` and `scimath` united arrays is very similar.
+The results displayed above show that the performance of
+`unitexpr` and `scimath` united arrays is similar.
 
 As a rough estimate calculations involving units are of the order of microseconds to
 tens of microseconds (depending on the complexitiy of the unit expression).
