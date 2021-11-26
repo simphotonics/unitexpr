@@ -247,12 +247,11 @@ Contributions are welcome.
 
 [issue tracker]: https://github.com/simphotonics/unitexpr/issues
 
-<!-- [benchmarks]: benchmarks -->
 [benchmarks]: https://unitexpr.simphotonics.com/benchmarks
 
 [numpy]: https://pypi.org/project/numpy/
 
-[pypi]: https:://pypi.org
+[pypi]: https://pypi.org
 
 [pytest]: https://pypi.org/project/pytest/
 

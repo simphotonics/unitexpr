@@ -158,7 +158,7 @@ Contributions are welcome.
 
 [numpy]: https://pypi.org/project/numpy/
 
-[pypi]: https:://pypi.org
+[pypi]: https://pypi.org
 
 [pytest]: https://pypi.org/project/pytest/
 
