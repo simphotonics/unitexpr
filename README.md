@@ -247,7 +247,7 @@ Contributions are welcome.
 
 [issue tracker]: https://github.com/simphotonics/unitexpr/issues
 
-[benchmarks]: BENCHMARKS
+[benchmarks]: benchmarks
 
 [numpy]: https://pypi.org/project/numpy/
 
