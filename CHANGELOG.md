@@ -1,6 +1,10 @@
+## 0.0.4
+
+Amended link.
+
 ## 0.0.3
 
-Amended format of links on pypi. 
+Amended format of links on pypi.
 
 ## 0.0.2
 
