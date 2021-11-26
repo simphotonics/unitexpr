@@ -134,4 +134,4 @@ dmypy.json
 # Symbolic links in src (to build docs)
 src/README.md
 src/CHANGELOG.md
-src/BENCHMARKS.md
+src/benchmarks.md
