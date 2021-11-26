@@ -20,11 +20,17 @@ expressions in terms of base units.
 
 The package [`unitexpr`][unitexpr] stores unit expressions in terms of
 base units *and* derived units. The advantage is that unit expressions
-retain their form. For example, the constant `m_e*c/h_bar` (where `m_e` is
+retain their form. The cost (in terms of computational time) of keeping
+track of derived unit terms is of the order of few microsecond, depending
+on the complexity of the unit expression. For more details see
+[benchmarks][benchmarks].
+
+For example, the constant `m_e*c/h_bar` (where `m_e` is
 the electron mass, `c` is the velocity of light, `h_bar` is the
 reduced Planck constant) is displayed as `m_e*c*h_bar**-1.0`. In
 terms of SI base units the same constant is given by
 the less obvious expression: `2589605074819.227*m**-1.0`.
+
 
 
 ## Installation
@@ -240,6 +246,8 @@ Please file feature requests and bugs at the [issue tracker].
 Contributions are welcome.
 
 [issue tracker]: https://github.com/simphotonics/unitexpr/issues
+
+[benchmarks]: https://unitexpr.simphotonics.com/BENCHMARKS
 
 [numpy]: https://pypi.org/project/numpy/
 
