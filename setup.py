@@ -1,11 +1,11 @@
 import setuptools
 
-with open("README.md", "r", encoding="utf-8") as fh:
+with open("README_PYPI.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="unitexpr",
-    version="0.0.1",
+    version="0.0.3",
     author="D Reschner",
     author_email="git@simphotonics.com",
     description="Units, unit expressions, and united arrays.",
