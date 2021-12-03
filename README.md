@@ -239,6 +239,25 @@ array is multiplied with the unit expression `factor` and for consistency the
 unit is divided by the same factor. For units with zero magnitude this
 raises an exception of type `DivisionByZeroError`.
 
+### 5. Scalar Quantities
+
+The class [`Quantity`][Quantity] represents a `scalar` quantity that
+can be expressed using a single numerical value and a unit.
+
+It is equivalent to a [`QArray][QArray] with shape `(1,0)` but its
+constructor is more concise and includes the additional parameter
+`info` which can be used to store object documentation.
+
+``` Python
+
+from unitexpr import Quantity
+from unitexpr.sc_units import ps, nm
+
+dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
+cavity_length = Quantity(1.25e6, unit =nm, info='Optical cavity length.')
+```
+
+
 
 ## Features and bugs
 
