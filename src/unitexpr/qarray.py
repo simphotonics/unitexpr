@@ -4,8 +4,8 @@ Numpy array with the additional attribute `unit`.
 
 from __future__ import annotations
 
-from typing import Union
-from numbers import Real, Number
+from typing import Callable, Union
+from numbers import Real
 
 import numpy as np
 from numpy.core._exceptions import UFuncTypeError
@@ -87,7 +87,7 @@ class QArray(np.ndarray):
         return super().__str__() + " unit: " + str(self.unit)
 
     def __repr__(self) -> str:
-        return super().__repr__() + " unit: " + str(self.unit)
+        return super().__repr__()[:-1] + f", unit={self.unit})"
 
     @property
     def unit(self):
@@ -121,11 +121,12 @@ class QArray(np.ndarray):
                 self.__unit = value
 
     def __add__(self, other) -> QArray:
+        other_unit = getattr(other, "unit", 1.0)
         # If units match simply add arrays.
-        if self.unit == other.unit:
+        if self.unit == other_unit:
             return super().__add__(other)
 
-        alpha = other.unit / self.unit
+        alpha = other_unit / self.unit
 
         if isinstance(alpha, Real):
             return super().__add__(other * alpha)
@@ -139,11 +140,13 @@ class QArray(np.ndarray):
         raise OperationNotSupported(self, other, "+")
 
     def __sub__(self, other) -> QArray:
+        other_unit = getattr(other, "unit", 1.0)
+
         # If units match simply subtract arrays.
-        if self.unit == other.unit:
+        if self.unit == other_unit:
             return super().__sub__(other)
 
-        alpha = other.unit / self.unit
+        alpha = other_unit / self.unit
 
         if isinstance(alpha, Real):
             return super().__sub__(other * alpha)
@@ -161,20 +164,14 @@ class QArray(np.ndarray):
         Returns the result of multiplying the united ndarray `self`
         with `other`.
         """
-        if isinstance(other, Number):
-            return super().__mul__(other)
-
         if isinstance(other, self._unit_types):
             obj = self.copy()
             obj.unit = self.unit * other
             return obj
 
         obj = super().__mul__(other)
-        try:
-            obj.unit = self.unit * other.unit
-        except AttributeError:
-            # Enable multiplication with ndarray (without units)
-            obj.unit = self.unit
+        other_unit = getattr(other, "unit", 1.0)
+        obj.unit = self.unit * other_unit
         return obj
 
     def __rmul__(self, other) -> QArray:
@@ -182,19 +179,14 @@ class QArray(np.ndarray):
         Returns the result of multiplying `other` with the united array
         `self`.
         """
-        if isinstance(other, Number):
-            return super().__rmul__(other)
-
         if isinstance(other, self._unit_types):
             obj = self.copy()
             obj.unit = other * self.unit
             return obj
 
         obj = super().__rmul__(other)
-        try:
-            obj.unit = other.unit * self.unit
-        except AttributeError:
-            obj.unit = self.unit
+        other_unit = getattr(other, "unit", 1.0)
+        obj.unit = other_unit * self.unit
         return obj
 
     def __truediv__(self, other) -> QArray:
@@ -202,45 +194,15 @@ class QArray(np.ndarray):
         Returns the result of dividing the united ndarray `self`
         with `other`.
         """
-        if isinstance(other, Number):
-            return super().__truediv__(other)
-
         if isinstance(other, self._unit_types):
             obj = self.copy()
             obj.unit = self.unit / other
             return obj
 
         obj = super().__truediv__(other)
-        try:
-            obj.unit = self.unit / other.unit
-        except AttributeError:
-            obj.unit = self.unit
+        other_unit = getattr(other, "unit", 1.0)
+        obj.unit = self.unit / other_unit
         return obj
-
-    # def __rtruediv__(self, other):
-    #     '''
-    #     Returns the result of dividing `other` by the united ndarray `self`.
-    #     '''
-    #     if isinstance(other, UnitBase):
-    #         obj = self.copy()
-    #         obj.unit = other/self.unit
-    #         return obj
-
-    #     if isinstance(other, UnitExprBase):
-    #         if other.factor == 1.0:
-    #             obj = self.copy()
-    #             obj.unit = other/self.unit
-    #         else:
-    #             obj = self.__rtruediv__(other.factor)
-    #             obj.unit = other.unit.scale(other.factor)/self.unit
-    #         return obj
-
-    #     obj = super().__rtruediv__(other)
-    #     try:
-    #         obj.unit = other.unit/self.unit
-    #     except AttributeError:
-    #         obj.unit = self.unit**-1
-    #     return obj
 
     def __pow__(self, other: Union[float, int]) -> QArray:
         obj = super().__pow__(other)
@@ -262,85 +224,58 @@ class QArray(np.ndarray):
         obj.unit = self.unit.__pos__()
         return obj
 
+    def __eq__(self, other) -> QArray:
+        result = self.__compare(other, super().__eq__)
+        if result is None:
+            result = super().__eq__(other)
+            result.__unit = 1.0
+            result.fill(False)
+        return result
+
     def __le__(self, other) -> QArray:
-        if self.unit == other.unit:
-            obj = super().__le__(other)
-            obj.__unit = 1.0
-            return obj
-
-        alpha = other.unit / self.unit
-
-        if isinstance(alpha, Real):
-            obj = super().__le__(other * alpha)
-            obj.__unit = 1.0
-            return obj
-
-        if (
-            isinstance(alpha, UnitExprBase)
-            and alpha.base_exponents == alpha.base_exponents_zero
-        ):
-            obj = super().__le__(other * alpha.base_factor)
-            obj.__unit = 1.0
-            return obj
-
-        raise OperationNotSupported(self, other, "<=")
+        result = self.__compare(other, super().__le__)
+        if result is None:
+            raise OperationNotSupported(self, other, "<=")
+        return result
 
     def __ge__(self, other) -> QArray:
-        if self.unit == other.unit:
-            obj = super().__ge__(other)
-            obj.__unit = 1.0
-            return obj
-
-        alpha = other.unit / self.unit
-
-        if isinstance(alpha, Real):
-            obj = super().__ge__(other * alpha)
-            obj.__unit = 1.0
-            return obj
-
-        if (
-            isinstance(alpha, UnitExprBase)
-            and alpha.base_exponents == alpha.base_exponents_zero
-        ):
-            obj = super().__ge__(other * alpha.base_factor)
-            obj.__unit = 1.0
-            return obj
-
-        raise OperationNotSupported(self, other, "<=")
+        result = self.__compare(other, super().__ge__)
+        if result is None:
+            raise OperationNotSupported(self, other, ">=")
+        return result
 
     def __gt__(self, other) -> QArray:
-        if self.unit == other.unit:
-            obj = super().__gt__(other)
-            obj.__unit = 1.0
-            return obj
-
-        alpha = other.unit / self.unit
-
-        if isinstance(alpha, Real):
-            obj = super().__gt__(other * alpha)
-            obj.__unit = 1.0
-            return obj
-
-        if (
-            isinstance(alpha, UnitExprBase)
-            and alpha.base_exponents == alpha.base_exponents_zero
-        ):
-            obj = super().__gt__(other * alpha.base_factor)
-            obj.__unit = 1.0
-            return obj
-
-        raise OperationNotSupported(self, other, "<=")
+        result = self.__compare(other, super().__gt__)
+        if result is None:
+            raise OperationNotSupported(self, other, ">")
+        return result
 
     def __lt__(self, other) -> QArray:
-        if self.unit == other.unit:
-            obj = super().__lt__(other)
+        result = self.__compare(other, super().__lt__)
+        if result is None:
+            raise OperationNotSupported(self, other, "<")
+        return result
+
+    def __compare(
+        self, other, comparison_operator: Callable
+    ) -> Union[QArray, None]:
+        """
+        Generic comparison function that handles input of type `Number`,
+        `ndarray` and `QArray` using `comparison_operator`.
+
+        Returns `None` if the comparison failed due to incompatible units.
+        """
+        other_unit = getattr(other, "unit", 1.0)
+
+        if self.unit == other_unit:
+            obj = comparison_operator(other)
             obj.__unit = 1.0
             return obj
 
-        alpha = other.unit / self.unit
+        alpha = other_unit / self.unit
 
         if isinstance(alpha, Real):
-            obj = super().__lt__(other * alpha)
+            obj = comparison_operator(other * alpha)
             obj.__unit = 1.0
             return obj
 
@@ -348,8 +283,8 @@ class QArray(np.ndarray):
             isinstance(alpha, UnitExprBase)
             and alpha.base_exponents == alpha.base_exponents_zero
         ):
-            obj = super().__lt__(other * alpha.base_factor)
+            obj = comparison_operator(other * alpha.base_factor)
             obj.__unit = 1.0
             return obj
 
-        raise OperationNotSupported(self, other, "<=")
+        return None
