@@ -1,10 +1,14 @@
+## 0.0.7
+
+Added package [lockattrs] to config option `install_requires`.
+
 ## 0.0.6
 
 Class `Quantity` now has a property named `value`.
 
 ## 0.0.5
 
-Added class `Quantity`. Refactors `QArray` operators.
+Added class `Quantity`. Refactored `QArray` operators.
 
 ## 0.0.4
 
@@ -21,3 +25,6 @@ Amended docs.
 ## 0.0.1
 
 Initial commit.
+
+
+[lockattrs]: https://pypi.org/project/lockattrs/

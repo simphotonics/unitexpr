@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="unitexpr",
-    version="0.0.6",
+    version="0.0.7",
     author="D Reschner",
     author_email="git@simphotonics.com",
     description="Units, unit expressions, and united arrays.",
@@ -23,4 +23,7 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.8",
+    install_requires=[
+        "lockattrs",
+    ],
 )
