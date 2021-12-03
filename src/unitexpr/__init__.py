@@ -18,3 +18,4 @@ The package `unitexpr` provides the modules:
 from .unit import UnitBase, UnitMeta
 from .unit_symbol import UnitSymbol
 from .qarray import QArray
+from .quantity import Quantity
