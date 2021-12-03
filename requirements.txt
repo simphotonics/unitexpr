@@ -1,2 +1,2 @@
-numpy~=1.21.1           # Array
-lockattrs~=0.0.2         # Lock class attributes
+numpy           # N-dim arrays
+lockattrs       # Locking class attributes

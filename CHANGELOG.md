@@ -1,3 +1,7 @@
+## 0.0.5
+
+Added class `Quantity`. Refactors `QArray` operators.
+
 ## 0.0.4
 
 Amended link.
