@@ -259,9 +259,12 @@ from unitexpr.sc_units import ps, nm
 
 dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
 cavity_length = Quantity(1.25e6, unit =nm, info='Optical cavity length.')
+
+# Accessing the quantity value:
+print(dt.item()) # Prints: 5.0
+
+print(dt[0])     # Prints: 5.0
 ```
-
-
 
 ## Features and bugs
 
