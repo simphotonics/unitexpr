@@ -16,8 +16,9 @@ ten = SiUnit("ten", "ten", "integer", 10.0 * SiUnit.expr_type.one)
 seven = SiUnit("seven", "seven", "integer", 7 * SiUnit.expr_type.one)
 zero = SiUnit("zero", "zero", "integer", one * 0.0)
 
-v_scimath = meter/second
-N_scimath = kilogram*meter/(second*second)
+v_scimath = meter / second
+N_scimath = kilogram * meter / (second * second)
+
 
 class TestAddition:
     def test_add_unitexpr_units(self, benchmark):
@@ -25,7 +26,7 @@ class TestAddition:
             return m / s + m / s
 
         benchmark.pedantic(add, iterations=20000, rounds=4)
-        assert add() == v/5.0
+        assert add() == v / 5.0
 
     def test_add_scimath_units(self, benchmark):
         def add():
@@ -33,6 +34,7 @@ class TestAddition:
 
         benchmark.pedantic(add, iterations=20000, rounds=4)
         assert add() == 2.0 * meter / second
+
 
 class TestComparison:
     def test_compare_unitexpr_units(self, benchmark):
@@ -53,14 +55,14 @@ class TestComparison:
 class TestMul:
     def test_mult_unitexpr_units(self, benchmark):
         def expr():
-            return kg*m*s**-2
+            return kg * m * s ** -2
 
         benchmark.pedantic(expr, iterations=20000, rounds=4)
         assert expr() == N
 
     def test_mult_scimath_units(self, benchmark):
         def expr():
-            return kilogram*meter*second**-2
+            return kilogram * meter * second ** -2
 
         benchmark.pedantic(expr, iterations=20000, rounds=4)
         assert expr() == N_scimath
