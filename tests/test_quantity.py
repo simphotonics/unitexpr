@@ -23,6 +23,10 @@ class TestQuantity:
     def test_info(self):
         assert m1.info == "Court yard length."
 
+    def test_value(self):
+        assert m1.value == 20
+        assert s1.value == 30
+
     def test_set_unit(self):
         x = a.copy()
         x.unit = 1000 * m / s

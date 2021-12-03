@@ -1,3 +1,7 @@
+## 0.0.6
+
+Class `Quantity` now has a property named `value`.
+
 ## 0.0.5
 
 Added class `Quantity`. Refactors `QArray` operators.

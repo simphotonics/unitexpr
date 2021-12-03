@@ -37,6 +37,13 @@ class Quantity(QArray):
         self.unit = getattr(obj, "unit", 1.0)
 
     @property
+    def value(self):
+        """ Copies the entry stored at `self[0]` to a
+        standard Python scalar and returns the result.
+        """
+        return self.item()
+
+    @property
     def info(self):
         try:
             return self.__info
