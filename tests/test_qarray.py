@@ -112,7 +112,6 @@ class TestQArray:
 
         assert array_equal(A > B, QArray.from_input([0, 0, 1]))
 
-
     def test_le(self):
         A = QArray.from_input([0, 1, 2], unit=m)
         B = QArray.from_input([0, 100, 2], unit=cm)

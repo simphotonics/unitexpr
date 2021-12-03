@@ -42,7 +42,7 @@ class TestQuantity:
         assert (m * s1).unit == m * s
 
     def test_add(self):
-        unit = getattr(m1 + m1, 'unit', 'Hello ->')
+        unit = getattr(m1 + m1, "unit", "Hello ->")
 
         assert unit == m
         A = Quantity(1.0, unit=m)
