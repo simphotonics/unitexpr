@@ -244,7 +244,7 @@ raises an exception of type `DivisionByZeroError`.
 The class [`Quantity`][Quantity] represents a `scalar` quantity that
 can be expressed using a single numerical value and a unit.
 
-It is equivalent to a [`QArray][QArray] with `shape: (1, )` but its
+It is equivalent to a [`QArray`][QArray] with `shape: (1, )` but its
 constructor is more concise and includes the additional parameter
 `info` which can be used to store object documentation.
 
