@@ -1,7 +1,7 @@
 from math import pi
 
 from unitexpr.qarray import QArray
-from unitexpr.si_units import m, s, h_bar, m_e, c, SiUnit
+from unitexpr.si_units import m, s, SiUnit
 
 
 q = QArray(shape=(2, 2))
