@@ -244,7 +244,7 @@ raises an exception of type `DivisionByZeroError`.
 The class [`Quantity`][Quantity] represents a `scalar` quantity that
 can be expressed using a single numerical value and a unit.
 
-It is equivalent to a [`QArray][QArray] with shape `(1,0)` but its
+It is equivalent to a [`QArray][QArray] with `shape: (1, )` but its
 constructor is more concise and includes the additional parameter
 `info` which can be used to store object documentation.
 
@@ -282,8 +282,8 @@ Contributions are welcome.
 
 [UnitBase]: http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitBase
 
-[UnitExprBase]: http://unitexpr.simphotonics.com/reference/unitexpr/_unit_expr/#UnitExprBase
-
 [UnitMeta]: http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitMeta
 
 [QArray]: http://unitexpr.simphotonics.com/reference/unitexpr/qarray/#QArray
+
+[Quantity]: http://unitexpr.simphotonics.com/reference/unitexpr/quantity/#Quantity
