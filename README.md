@@ -196,6 +196,8 @@ print("Pi*a*9.81*m/s**2 =")
 print(Pi * a * 9.81 * m / s ** 2)
 ```
 Running the script above produces the following output:
+<details> <summary> Click to show the console output. </summary>
+
 ``` Console
 (unitexpr) $ python example/qarray_example.py
 q =
@@ -222,6 +224,8 @@ Pi*a*9.81*m/s**2 =
 [[98.1 98.1]
  [98.1 98.1]] unit: Pi*m**2.0*s**-2.0
 ```
+</details>
+
 
 Tip: United arrays can be multiplied with unit expressions.
 Any numerical factor will be multiplied with the array using scalar
