@@ -28,10 +28,9 @@ class OperationNotSupported(Exception):
         Returns the error message string.
         """
         return (
-            "Could not evaluate "
-            + f"{self.left.__class__.__name__}:{self.left.__repr__()} "
-            + f"{self.operator} {self.right.__class__.__name__}:"
-            + f"{self.right.__repr__()}"
+            "Could not evaluate: "
+            + f"{self.left.__repr__()} {self.operator}"
+            + f" {self.right.__repr__()} ."
             + self.addon_message
         )
 
