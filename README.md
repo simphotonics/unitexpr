@@ -42,80 +42,31 @@ $ pip install unitexpr
 
 ## Usage
 
-The sections below demonstrate how to sub-class [`UnitBase`][UnitBase]
-to define unit systems and united numpy arrays.
+The following sections demonstrate how to create
+[unit expressions](#1-unit-expressions) ,
+work with [quantity arrays](#2-quantity-arrays), [scalar quantities](#3-scalar-quantities),
+and define [custom unit systems](#4-custom-unit-systems).
 
-### 1. Defining Base Units
 
-In order to define a unit system, one must first specify the
-base units. In the context of this package this is done using
-the immutable class [`UnitSymbol`][UnitSymbol] which has
-the following instance attributes: `symbol`, `name`, and `quantity`.
-``` Python
-from unitexpr import UnitSymbol
-
-# Defining unit symbols
-unit_symbols = (
-            UnitSymbol(symbol='m','name'='meter',quantity='length'),
-            UnitSymbol(symbol='s','name'='second',quantity='time'),
-            UnitSymbol(symbol='kg','name'='kilogram',quantity='weight')
-        )
-```
-Note: The attribute `symbol` must be a valid Python identifier.
-
-### 2. Defining a Unit System
-
-A custom unit system can be defined by sub-classing [`UnitBase`][UnitBase]
-and specifying the meta-class [`UnitMeta`][UnitMeta], and the
-custom base unit symbols in the class constructor.
-
-```Python
-from unitexpr import UnitBase, UnitMeta
-
-# Defining a unit system using the base unit symbols specified above.
-# Note the use of the metaclass `UnitMeta`.
-class MetricUnit(UnitBase, metaclass=UnitMeta, unit_symbols=unit_symbols):
-    pass
-
-# Base units are available as class attributes.
-# For example:
-m = MetricUnit.m
-s = MetricUnit.s
-kg = MetricUnit.kg
-
-assert type(m) == MetricUnit
-
-# Declaring derived units
-c = MetricUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)
-```
-The base units are constructed during the instantiation of the meta-class
-and are available as class attributes. In the example above the
-base units are `m`, `s`, and `kg`.
-
-Derived units and unit expressions can be constructed using the operations:
-- multiplication: `J = MetricUnit('J', 'joule', 'energy', expr=N*m)`
-- division: `W = SiUnit('W', 'watt', 'power', expr=J/s)`
-- scalar multiplication: `c = MetricUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)`
-- exponentiation: `N = MetricUnit('N', 'newton', 'force', expr=kg*m*s**-2)`.
-
-It is advisable to choose the unit variable name as the unit symbol. For example,
-the constant `c` (defined above) represents
-the speed of light and its unit symbol was set to 'c'.
-
-Note: Units and unit expressions extend Python's `namedtuple` and as such are immutable.
-
-### 3. Unit Expressions
+### 1. Unit Expressions
 
 Unit expressions are objects with base class `UnitExprBase`.
 Each unit system defines a unique unit expression type
 that is available as a class attribute
-(`.expr_type`). Valid unit expression terms for a given unit system are:
+(`.expr_type`). Valid unit expression *terms* for a given unit system are:
 base units, derived units, unit expressions, and numbers of type float and int.
 
+The package comes with two predefined unit systems:
+SI units (based on meter, second, kilogram, Ampere, Kelvin, mol, and candela)
+and Semiconductor units
+(based on nanometer, picosecond, electron mass, Ampere, Kelvin, mol, and candela).
+
 ``` python
-# Accessing the unit expression type of the units system defined above:
-MetricUnitExpr = MetricUnit.expr_type
-assert type(m/s) == MetricUnitExpr
+from unitexpr.si_units import m, s, SiUnit
+
+# Accessing the unit expression type of the units system:
+SiUnitExpr = SiUnit.expr_type
+assert type(m/s) == SiUnitExpr
 
 # Examples of unit expressions:
 v = 10.0*m/s
@@ -126,10 +77,12 @@ When adding or subtracting units and unit expression the term on the left
 side determines the form of the expression. This is best shown in the example
 below.
 ``` python
+from unitexpr.si_units import c
+
+# c = SiUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)
 
 # Define units:
-c_light = MetricUnit('c_light', 'speed of light', 'velocity', expr=299792458*m/s)
-c_sound = MetricUnit('c_sound', 'speed of sound', 'velocity', expr=343*m/s)
+c_sound = SiUnit('c_sound', 'speed of sound', 'velocity', expr=343*m/s)
 
 v1 = c_light + c_sound
 v2 = c_sound + c_light
@@ -141,7 +94,7 @@ print(v2) # Prints:  874031.4897959183*c_sound
 ```
 
 
-### 4. Quantity Arrays
+### 2. Quantity Arrays
 
 To support scientific calculation
 the package includes [`QArray`][QArray]
@@ -155,7 +108,6 @@ the additional optional parameter `unit` (default value 1.0).
 
 To construct a [`QArray`][QArray] from an existing array or
 a sequence of entries use the class method `QArray.from_input`.
-
 
 ```Python
 from math import pi
@@ -243,13 +195,11 @@ array is multiplied with the unit expression `factor` and for consistency the
 unit is divided by the same factor. For units with zero magnitude this
 raises an exception of type `DivisionByZeroError`.
 
-### 5. Scalar Quantities
+### 3. Scalar Quantities
 
 The class [`Quantity`][Quantity] represents a `scalar` quantity that
 can be expressed using a single numerical value and a unit.
-
-It is equivalent to a [`QArray`][QArray] with `shape: (1, )` but its
-constructor is more concise and includes the additional parameter
+Its constructor has the additional parameter
 `info` which can be used to store object documentation.
 
 ``` Python
@@ -258,15 +208,77 @@ from unitexpr import Quantity
 from unitexpr.sc_units import ps, nm
 
 dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
-cavity_length = Quantity(1.25e6, unit =nm, info='Optical cavity length.')
+cavity_length = Quantity(1.25e6, unit=nm, info='Optical cavity length.')
 
 # Accessing the quantity value:
 print(dt.value)  # Prints: 5.0
-
-print(dt.item()) # Prints: 5.0
-
-print(dt[0])     # Prints: 5.0
 ```
+
+## Custom Unit Systems
+
+This package was designed to make defining custom unit systems a
+simple task.
+The sections below demonstrate how to sub-class [`UnitBase`][UnitBase]
+to define unit systems and united numpy arrays.
+
+### 1. Defining Base Units
+
+In order to define a unit system, one must first specify the
+base units. In the context of this package this is done using
+the immutable class [`UnitSymbol`][UnitSymbol] which has
+the instance attributes: `symbol`, `name`, and `quantity`.
+``` Python
+from unitexpr import UnitSymbol
+
+# Defining unit symbols
+unit_symbols = (
+            UnitSymbol(symbol='m','name'='meter',quantity='length'),
+            UnitSymbol(symbol='s','name'='second',quantity='time'),
+            UnitSymbol(symbol='kg','name'='kilogram',quantity='weight')
+        )
+```
+Note: The attribute `symbol` must be a valid Python identifier.
+
+### 2. Defining a Unit System
+
+A custom unit system can be defined by sub-classing [`UnitBase`][UnitBase]
+specifying the meta-class [`UnitMeta`][UnitMeta] and the
+custom base unit symbols as class constructor parameters:
+
+```Python
+from unitexpr import UnitBase, UnitMeta
+
+# Defining a unit system using the base unit symbols specified above.
+# Note the use of the metaclass `UnitMeta`.
+class MetricUnit(UnitBase, metaclass=UnitMeta, unit_symbols=unit_symbols):
+    pass
+
+# Base units are now available as class attributes.
+# For example:
+m = MetricUnit.m
+s = MetricUnit.s
+kg = MetricUnit.kg
+
+assert type(m) == MetricUnit
+
+# Declaring derived units
+c = MetricUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)
+```
+The base units are constructed during the instantiation of the meta-class
+and are available as class attributes. In the example above the
+base units are `m`, `s`, and `kg`.
+
+Derived units and unit expressions can be constructed using the operations:
+- multiplication: `J = MetricUnit('J', 'joule', 'energy', expr=N*m)`
+- division: `W = MetricUnit('W', 'watt', 'power', expr=J/s)`
+- scalar multiplication: `c = MetricUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)`
+- exponentiation: `N = MetricUnit('N', 'newton', 'force', expr=kg*m*s**-2)`.
+
+It is advisable to choose the unit variable name as the unit symbol. For example,
+the constant `c` (defined above) represents
+the speed of light and its unit symbol was set to 'c'.
+
+Note: Units and unit expressions extend Python's `namedtuple` and as such are immutable.
 
 ## Features and bugs
 
