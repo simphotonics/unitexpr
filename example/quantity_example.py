@@ -1,7 +1,10 @@
 from unitexpr import Quantity
-from unitexpr.si_units import m, s
+from unitexpr.si_units import m, s, SiUnit
 
+cm = SiUnit("cm", "centimeter", "length", m / 100.0)
 q = Quantity(2.0, m)
+p = Quantity(2.0, cm)
+
 print(f"q = {q}")
 print()
 
@@ -26,3 +29,6 @@ m1 = Quantity(20, unit=m, info="Court yard length.")
 m2 = m1 * m1
 
 print(m2.__repr__())
+
+print(q + p)
+
