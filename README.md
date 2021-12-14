@@ -229,18 +229,20 @@ normalization will fail with a `DivisionByZero` error).
 
 ## Custom Unit Systems
 
-Defining custom unit systems using the package is simple task
-consisting of two steps:
-[defining base unit symbols](1-defining-base-unit-symbols) and
-[defining the unit system](2-defining-a-unit-system)
+Defining custom unit systems using the package [`unitexpr`][unitexpr]
+is a simple task consisting of two steps:
+defining [base unit symbols](#1-defining-base-unit-symbols) and
+defining the [unit system](#2-defining-a-unit-system)
 by sub-classing [`UnitBase`][UnitBase].
 
 ### 1. Defining Base Unit Symbols
 
 In order to define a unit system, one must first specify the
-base unit symbols. In the context of this package this is done using
-the immutable class [`UnitSymbol`][UnitSymbol] which has
-the instance attributes: `symbol`, `name`, and `quantity`.
+base unit symbols. In the context of this package this is done
+by constructing a tuple with entries of type
+[`UnitSymbol`][UnitSymbol] (an immutable class with
+instance attributes: `symbol`, `name`, and `quantity`):
+
 ``` Python
 from unitexpr import UnitSymbol
 
