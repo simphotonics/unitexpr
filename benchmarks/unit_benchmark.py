@@ -1,6 +1,3 @@
-import pytest
-
-from unitexpr.unit import *
 from unitexpr.si_units import m, s, kg, N, SiUnit
 from scimath.units.length import meter
 from scimath.units.time import second
