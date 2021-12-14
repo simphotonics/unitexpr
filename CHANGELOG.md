@@ -1,3 +1,7 @@
+## 0.0.9
+
+Amended docs.
+
 ## 0.0.8
 
 * Renamed class `QArray` -> `qarray`.
