@@ -1,4 +1,0 @@
-pytest~=6.2.4           # Required to run the project unit tests.
-pytest-benchmark~=3.4.1 # Benchmark harness
-flake8~=4.0.1           # Linter
-black~=21.10b0          # Formatter
