@@ -248,9 +248,9 @@ from unitexpr import UnitSymbol
 
 # Defining unit symbols
 unit_symbols = (
-            UnitSymbol(symbol='m','name'='meter',quantity='length'),
-            UnitSymbol(symbol='s','name'='second',quantity='time'),
-            UnitSymbol(symbol='kg','name'='kilogram',quantity='weight')
+            UnitSymbol(symbol='m',name='meter',quantity='length'),
+            UnitSymbol(symbol='s',name='second',quantity='time'),
+            UnitSymbol(symbol='kg',name='kilogram',quantity='weight')
         )
 ```
 Note: The attribute `symbol` must be a valid Python identifier.
