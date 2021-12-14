@@ -1,11 +1,8 @@
 import pytest
-
 from numpy import array_equal
-
-from unitexpr.si_units import m, s, SiUnit
-from unitexpr import Quantity
+from unitexpr import QArray, Quantity
 from unitexpr.errors import OperationNotSupported
-
+from unitexpr.si_units import SiUnit, m, s
 
 cm = SiUnit("cm", "centimeter", "length", expr=1e-2 * m)
 
@@ -13,6 +10,8 @@ a = Quantity(10)
 
 m1 = Quantity(20, unit=m, info="Court yard length.")
 s1 = Quantity(30, unit=s)
+
+Q = QArray.from_input([1.0, 1.0], m)
 
 
 class TestQuantity:
@@ -26,12 +25,6 @@ class TestQuantity:
     def test_value(self):
         assert m1.value == 20
         assert s1.value == 30
-
-    def test_set_unit(self):
-        x = a.copy()
-        x.unit = 1000 * m / s
-        assert x[0] == 1.0e4
-        assert x.unit.factor == 1.0
 
     def test_mul(self):
         assert (m1 * s1).unit == m * s
@@ -53,11 +46,11 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         C = A + B
         assert C.unit == m
-        assert C[0] == 1.1
+        assert C.value == 1.1
 
         D = B + A
         assert D.unit == cm
-        assert D[0] == 110
+        assert D.value == 110
 
     def test_add_incompat(self):
         with pytest.raises(OperationNotSupported):
@@ -69,11 +62,11 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         C = A - B
         assert C.unit == m
-        assert C[0] == 0.9
+        assert C.value == 0.9
 
         D = B - A
         assert D.unit == cm
-        assert D[0] == -90
+        assert D.value == -90
 
     def test_sub_incompat(self):
         with pytest.raises(OperationNotSupported):
@@ -99,25 +92,47 @@ class TestQuantity:
             m1 < s1
         A = Quantity(1.0, unit=m)
         B = Quantity(10, unit=cm)
-        assert array_equal(A < B, [0])
+        assert B < A
 
     def test_gt(self):
         with pytest.raises(OperationNotSupported):
             m1 > s1
         A = Quantity(1.0, unit=m)
         B = Quantity(10, unit=cm)
-        assert array_equal(A > B, [1])
+        assert A > B
 
     def test_le(self):
         with pytest.raises(OperationNotSupported):
             m1 <= s1
         A = Quantity(1.0, unit=m)
         B = Quantity(10, unit=cm)
-        assert array_equal(A <= B, [0])
+        assert B < A
 
     def test_ge(self):
         with pytest.raises(OperationNotSupported):
             m1 >= s1
         A = Quantity(1.0, unit=m)
         B = Quantity(10, unit=cm)
-        assert array_equal(A >= B, [1])
+        assert A >= B
+
+
+class TestQ:
+    def test_mul(self):
+        result = Q * m1
+        assert result.unit == m ** 2
+        assert array_equal(result, [20.0, 20.0])
+
+    def test_rmul(self):
+        result = s1 * Q
+        assert result.unit == s * m
+        assert array_equal(result, [30.0, 30.0])
+
+    def test_div(self):
+        result = Q / s1
+        assert result.unit == m / s
+        assert array_equal(result, [1.0 / 30, 1.0 / 30])
+
+    def test_rdiv(self):
+        result = s1 / Q
+        assert result.unit == s / m
+        assert array_equal(result, [30.0, 30.0])
