@@ -45,7 +45,7 @@ $ pip install unitexpr
 The following sections demonstrate how to create
 [unit expressions](#1-unit-expressions) ,
 work with [quantity arrays](#2-quantity-arrays), [scalar quantities](#3-scalar-quantities),
-and define [custom unit systems](#4-custom-unit-systems).
+and define [custom unit systems](#custom-unit-systems).
 
 
 ### 1. Unit Expressions
