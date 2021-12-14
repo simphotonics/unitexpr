@@ -1,6 +1,6 @@
 import pytest
 from numpy import array_equal
-from unitexpr import QArray, Quantity
+from unitexpr import qarray, Quantity
 from unitexpr.errors import OperationNotSupported
 from unitexpr.si_units import SiUnit, m, s
 
@@ -11,7 +11,7 @@ a = Quantity(10)
 m1 = Quantity(20, unit=m, info="Court yard length.")
 s1 = Quantity(30, unit=s)
 
-Q = QArray.from_input([1.0, 1.0], m)
+Q = qarray.from_input([1.0, 1.0], m)
 
 
 class TestQuantity:

@@ -44,17 +44,18 @@ $ pip install unitexpr
 
 The following sections demonstrate how to create
 [unit expressions](#1-unit-expressions) ,
-work with [quantity arrays](#2-quantity-arrays), [scalar quantities](#3-scalar-quantities),
-and define [custom unit systems](#custom-unit-systems).
+work with [quantity arrays](#2-quantity-arrays),
+define [scalar quantities](#3-scalar-quantities),
+and construct [custom unit systems](#custom-unit-systems).
 
 
 ### 1. Unit Expressions
 
 Unit expressions are objects with base class `UnitExprBase`.
-Each unit system defines a unique unit expression type
+Each unit system defines a *unique* unit expression type
 that is available as a class attribute
 (`.expr_type`). Valid unit expression *terms* for a given unit system are:
-base units, derived units, unit expressions, and numbers of type float and int.
+base units, derived units, unit expressions, and real numbers.
 
 The package comes with two predefined unit systems:
 SI units (based on meter, second, kilogram, Ampere, Kelvin, mol, and candela)
@@ -62,7 +63,7 @@ and Semiconductor units
 (based on nanometer, picosecond, electron mass, Ampere, Kelvin, mol, and candela).
 
 ``` python
-from unitexpr.si_units import m, s, SiUnit
+from unitexpr.si_units import m, s, c, SiUnit
 
 # Accessing the unit expression type of the units system:
 SiUnitExpr = SiUnit.expr_type
@@ -71,17 +72,15 @@ assert type(m/s) == SiUnitExpr
 # Examples of unit expressions:
 v = 10.0*m/s
 w = v + 20.0*v
-```
 
-When adding or subtracting units and unit expression the term on the left
-side determines the form of the expression. This is best shown in the example
-below.
-``` python
-from unitexpr.si_units import c
-
+# When adding or subtracting units and unit expression the term on the left
+# side determines the form of the expression. This is best shown in the example
+# below.
+#
+# Note: c is defined as:
 # c = SiUnit('c', 'speed of light', 'velocity', expr=299792458*m/s)
 
-# Define units:
+# Defining a derived unit:
 c_sound = SiUnit('c_sound', 'speed of sound', 'velocity', expr=343*m/s)
 
 v1 = c_light + c_sound
@@ -93,30 +92,64 @@ print(v1) # Prints:  1.0000011441248464*c_light
 print(v2) # Prints:  874031.4897959183*c_sound
 ```
 
+### 2. Scalar Quantities
 
-### 2. Quantity Arrays
+The class [`Quantity`][Quantity] represents a `scalar` quantity that
+can be expressed using a single numerical value
+(including complex numbers) and a unit.
+Its constructor has the additional parameter
+`info` which can be used to store object documentation.
+
+Objects of type [`Quantity`][Quantity] can be used to store
+physical parameters:
+
+``` Python
+from unitexpr import Quantity
+from unitexpr.sc_units import ps, nm
+
+dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
+cavity_length = Quantity(1.25e6, unit=nm, info='Optical cavity length.')
+
+# Accessing the quantity value:
+print(dt.value)      # Prints: 5.0
+
+print(dt)            # Prints: 5.0 ps
+print(dt.__repr__()) # Quantity(5.0, unit=ps, info='Time-integration step size.')
+
+# Quantity expressions:
+print(dt*cavity_length) # Prints: 6250000.0 ps*nm
+
+
+```
+Tip: Objects of type [`Quantity`][Quantity] support division and multiplication with
+`qarrays` and implement the numerical operators:
+`+, -, *, **, \, abs, neg, pos, <, <=, >, >=`.
+
+
+### 3. Quantity Arrays
 
 To support scientific calculation
-the package includes [`QArray`][QArray]
+the package includes [`qarray`][qarray]
 an extension of numpy's `ndarray`.
 
-The entries of a [`QArray`][QArray] represent
-physical *quantities* that can be expressed in terms of a
-number and a unit.  The constructor of [`QArray`][QArray]
+The entries of a [`qarray`][qarray] represent
+the numerical value of physical *quantities*
+that can be expressed in terms of a
+number and a unit.  The constructor of [`qarray`][qarray]
 accepts the same parameters as the constructor of `ndarray` with
 the additional optional parameter `unit` (default value 1.0).
 
-To construct a [`QArray`][QArray] from an existing array or
-a sequence of entries use the class method `QArray.from_input`.
+To construct a [`qarray`][qarray] from an existing array or
+a sequence of entries use the class method `qarray.from_input`.
 
 ```Python
 from math import pi
 
-from unitexpr.qarray import QArray
+from unitexpr import qarray
 from unitexpr.si_units import m, s, h_bar, m_e, c, SiUnit
 
 
-q = QArray(shape=(2, 2))
+q = qarray(shape=(2, 2))
 q.fill(10.0)
 print("q = ")
 print(q)
@@ -127,7 +160,7 @@ print("a = q*m = ")
 print(a)
 print()
 
-b = QArray.from_input(q, unit=s)
+b = qarray.from_input(q, unit=s)
 b.fill(2.0)
 
 print("b =")
@@ -185,46 +218,27 @@ multiplication. The remaining part of the unit expression will be
 multiplied with the unit attribute of the array.
 
 To retain a numerical factor, for example `pi` as term of the
-unit expression it must be decared as a unit (see the example
+unit expression it must be declared as a unit (see the example
 above).
 
 Note: Units and unit expressions with zero magnitude
-may `not` be used with united arrays.
-The instance attribute `unit` is a `@property`. In its set method the
-array is multiplied with the unit expression `factor` and for consistency the
-unit is divided by the same factor. For units with zero magnitude this
-raises an exception of type `DivisionByZeroError`.
+may `not` be assigned as the unit attribute of qarrays (
+normalization will fail with a `DivisionByZero` error).
 
-### 3. Scalar Quantities
 
-The class [`Quantity`][Quantity] represents a `scalar` quantity that
-can be expressed using a single numerical value and a unit.
-Its constructor has the additional parameter
-`info` which can be used to store object documentation.
-
-``` Python
-
-from unitexpr import Quantity
-from unitexpr.sc_units import ps, nm
-
-dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
-cavity_length = Quantity(1.25e6, unit=nm, info='Optical cavity length.')
-
-# Accessing the quantity value:
-print(dt.value)  # Prints: 5.0
-```
 
 ## Custom Unit Systems
 
-This package was designed to make defining custom unit systems a
-simple task.
-The sections below demonstrate how to sub-class [`UnitBase`][UnitBase]
-to define unit systems and united numpy arrays.
+Defining custom unit systems using the package is simple task
+consisting of two steps:
+[defining base unit symbols](1-defining-base-unit-symbols) and
+[defining the unit system](2-defining-a-unit-system)
+by sub-classing [`UnitBase`][UnitBase].
 
-### 1. Defining Base Units
+### 1. Defining Base Unit Symbols
 
 In order to define a unit system, one must first specify the
-base units. In the context of this package this is done using
+base unit symbols. In the context of this package this is done using
 the immutable class [`UnitSymbol`][UnitSymbol] which has
 the instance attributes: `symbol`, `name`, and `quantity`.
 ``` Python
@@ -305,6 +319,6 @@ Contributions are welcome.
 
 [UnitMeta]: http://unitexpr.simphotonics.com/reference/unitexpr/unit/#UnitMeta
 
-[QArray]: http://unitexpr.simphotonics.com/reference/unitexpr/qarray/#QArray
+[qarray]: http://unitexpr.simphotonics.com/reference/unitexpr/qarray/#qarray
 
 [Quantity]: http://unitexpr.simphotonics.com/reference/unitexpr/quantity/#Quantity

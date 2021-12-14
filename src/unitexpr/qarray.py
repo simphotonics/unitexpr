@@ -14,12 +14,12 @@ from .quantity import Quantity
 from .unit import UnitBase, UnitExprBase
 
 
-class QArray(np.ndarray):
+class qarray(np.ndarray):
     """
     An array with elements representing a quantity that can be
     described by a numerical value and a unit.
 
-    `QArray` is a sub-class of ndarray with the additional instance
+    `qarray` is a sub-class of ndarray with the additional instance
     attribute `unit`.
 
     Implementation closely follows:
@@ -40,7 +40,7 @@ class QArray(np.ndarray):
         unit=1.0,
     ):
         # The call in the next line triggers a call to
-        # QArray.__array_finalize__
+        # qarray.__array_finalize__
         obj = super().__new__(
             subtype, shape, dtype, buffer, offset, strides, order
         )
@@ -49,34 +49,34 @@ class QArray(np.ndarray):
 
     def __array_finalize__(self, obj):
         # ``self`` is a new object resulting from
-        # ndarray.__new__(QArray, ...), therefore it only has
+        # ndarray.__new__(qarray, ...), therefore it only has
         # attributes that the ndarray.__new__ constructor gave it -
         # i.e. those of a standard ndarray.
         #
         # We could have got to the ndarray.__new__ call in 3 ways:
-        # From an explicit constructor - e.g. QArray():
+        # From an explicit constructor - e.g. qarray():
         #    obj is None
-        #    (we're in the middle of the QArray.__new__
+        #    (we're in the middle of the qarray.__new__
         #    constructor, and self.unit will be set when we return to
-        #    QArray.__new__)
+        #    qarray.__new__)
         if obj is None:
             return
-        # From view casting - e.g arr.view(QArray):
+        # From view casting - e.g arr.view(qarray):
         #    obj is arr
-        #    (type(obj) can be QArray)
+        #    (type(obj) can be qarray)
         # From new-from-template - e.g infoarr[:3]
-        #    type(obj) is QArray
+        #    type(obj) is qarray
         #
         # Note that it is here, rather than in the __new__ method,
         # that we set the default value for 'unit', because this
         # method sees all creation of default objects - with the
-        # QArray.__new__ constructor, but also with
-        # arr.view(QArray).
+        # qarray.__new__ constructor, but also with
+        # arr.view(qarray).
         self.__unit = getattr(obj, "unit", 1.0)
 
     @classmethod
-    def from_input(cls, input, unit=1.0) -> QArray:
-        """Constructs a `QArray` from an existing ndarray
+    def from_input(cls, input, unit=1.0) -> qarray:
+        """Constructs a `qarray` from an existing ndarray
         or from a (nested) sequence of entries.
         """
         obj = np.asarray(input).view(cls)
@@ -124,7 +124,7 @@ class QArray(np.ndarray):
     def __repr__(self) -> str:
         return super().__repr__()[:-1] + f", unit={self.unit})"
 
-    def __add__(self, other) -> QArray:
+    def __add__(self, other) -> qarray:
         other_unit = getattr(other, "unit", 1.0)
         # If units match simply add arrays.
         if self.unit == other_unit:
@@ -143,7 +143,7 @@ class QArray(np.ndarray):
 
         raise OperationNotSupported(self, other, "+")
 
-    def __sub__(self, other) -> QArray:
+    def __sub__(self, other) -> qarray:
         other_unit = getattr(other, "unit", 1.0)
 
         # If units match simply subtract arrays.
@@ -163,7 +163,7 @@ class QArray(np.ndarray):
 
         raise OperationNotSupported(self, other, "-")
 
-    def __mul__(self, other) -> QArray:
+    def __mul__(self, other) -> qarray:
         """
         Returns the result of multiplying the united ndarray `self`
         with `other`.
@@ -183,7 +183,7 @@ class QArray(np.ndarray):
         obj.unit = self.unit * other_unit
         return obj
 
-    def __rmul__(self, other) -> QArray:
+    def __rmul__(self, other) -> qarray:
         """
         Returns the result of multiplying `other` with the united array
         `self`.
@@ -203,7 +203,7 @@ class QArray(np.ndarray):
         obj.unit = other_unit * self.unit
         return obj
 
-    def __truediv__(self, other) -> QArray:
+    def __truediv__(self, other) -> qarray:
         """
         Returns the result of dividing the united ndarray `self`
         with `other`.
@@ -223,7 +223,7 @@ class QArray(np.ndarray):
         obj.unit = self.unit / other_unit
         return obj
 
-    def __rtruediv__(self, other) -> QArray:
+    def __rtruediv__(self, other) -> qarray:
         """
         Returns the result of dividing `other` by the united ndarray `self`.
         """
@@ -242,27 +242,27 @@ class QArray(np.ndarray):
         obj.unit = other_unit / self.unit
         return obj
 
-    def __pow__(self, other: Union[float, int]) -> QArray:
+    def __pow__(self, other: Union[float, int]) -> qarray:
         obj = super().__pow__(other)
         obj.unit = self.unit.__pow__(other)
         return obj
 
-    def __abs__(self) -> QArray:
+    def __abs__(self) -> qarray:
         obj = super().__abs__()
         obj.unit = self.unit
         return obj
 
-    def __neg__(self) -> QArray:
+    def __neg__(self) -> qarray:
         obj = super().__neg__()
         obj.unit = self.unit
         return obj
 
-    def __pos__(self) -> QArray:
+    def __pos__(self) -> qarray:
         obj = super().__pos__()
         obj.unit = self.unit.__pos__()
         return obj
 
-    def __eq__(self, other) -> QArray:
+    def __eq__(self, other) -> qarray:
         result = self.compare(other, super().__eq__)
         if result is None:
             result = super().__eq__(other)
@@ -270,34 +270,34 @@ class QArray(np.ndarray):
             result.fill(False)
         return result
 
-    def __le__(self, other) -> QArray:
+    def __le__(self, other) -> qarray:
         result = self.compare(other, super().__le__)
         if result is None:
             raise OperationNotSupported(self, other, "<=")
         return result
 
-    def __ge__(self, other) -> QArray:
+    def __ge__(self, other) -> qarray:
         result = self.compare(other, super().__ge__)
         if result is None:
             raise OperationNotSupported(self, other, ">=")
         return result
 
-    def __gt__(self, other) -> QArray:
+    def __gt__(self, other) -> qarray:
         result = self.compare(other, super().__gt__)
         if result is None:
             raise OperationNotSupported(self, other, ">")
         return result
 
-    def __lt__(self, other) -> QArray:
+    def __lt__(self, other) -> qarray:
         result = self.compare(other, super().__lt__)
         if result is None:
             raise OperationNotSupported(self, other, "<")
         return result
 
-    def compare(self, other, comparison_operator: Callable) -> QArray:
+    def compare(self, other, comparison_operator: Callable) -> qarray:
         """
         Generic comparison function that handles input of type `Number`,
-        `ndarray` and `QArray` using `comparison_operator`.
+        `ndarray` and `qarray` using `comparison_operator`.
 
         Returns `None` if the comparison failed due to incompatible units.
         """

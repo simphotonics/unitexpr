@@ -4,7 +4,7 @@ from scimath.units.length import centimeter, meter
 from scimath.units.time import second
 from scimath.units.unit_array import UnitArray as UnitArraySci
 
-from unitexpr.qarray import QArray
+from unitexpr.qarray import qarray
 from unitexpr.si_units import SiUnit, m, s
 
 cm = SiUnit("cm", "centimeter", "length", 1.0e-2 * m)
@@ -15,14 +15,14 @@ ny = 200
 A = ndarray(shape=(nx, ny))
 A.fill(10.0)
 
-M = QArray.from_input(A, unit=m ** 2)
+M = qarray.from_input(A, unit=m ** 2)
 
-C = QArray(shape=(nx, ny), unit=cm ** 2)
+C = qarray(shape=(nx, ny), unit=cm ** 2)
 C.fill(1.0e4)
 
-S = QArray.from_input(A, unit=s)
+S = qarray.from_input(A, unit=s)
 
-R = QArray(shape=(nx, ny), unit=m ** 2)
+R = qarray(shape=(nx, ny), unit=m ** 2)
 R.fill(11)
 
 

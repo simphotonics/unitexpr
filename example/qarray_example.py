@@ -1,10 +1,10 @@
 from math import pi
 
-from unitexpr.qarray import QArray
+from unitexpr.qarray import qarray
 from unitexpr.si_units import m, s, SiUnit
 
 
-q = QArray(shape=(2, 2))
+q = qarray(shape=(2, 2))
 q.fill(10.0)
 print("q = ")
 print(q)
@@ -15,7 +15,7 @@ print("a = q*m = ")
 print(a)
 print()
 
-b = QArray(shape=(2, 2), unit=s)
+b = qarray(shape=(2, 2), unit=s)
 b.fill(2.0)
 
 print("b =")

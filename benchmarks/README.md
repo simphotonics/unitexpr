@@ -61,7 +61,7 @@ base units *and* derived units.
 
 To support scientific calculation
 the package also includes a united array.
-The class `QArray`
+The class `qarray`
 extends numpy's `ndarray` adding the additional
 instance attribute `unit` (with default value 1.0).
 
@@ -97,7 +97,7 @@ To produce the benchmarks the following arrays were constructed:
 from numpy import ndarray, array_equal
 
 from unitexpr.si_units import m, s, SiUnit
-from unitexpr.qarray import QArray
+from unitexpr.qarray import qarray
 
 from scimath.units.length import meter, centimeter
 from scimath.units.time import second
@@ -113,14 +113,14 @@ ny = 200
 A = ndarray(shape=(nx, ny))
 A.fill(10.0)
 
-M = QArray.from_input(A, unit=m ** 2)
+M = qarray.from_input(A, unit=m ** 2)
 
-C = QArray(shape=(nx, ny), unit=cm ** 2)
+C = qarray(shape=(nx, ny), unit=cm ** 2)
 C.fill(1.0e4)
 
-S = QArray.from_input(A, unit=s)
+S = qarray.from_input(A, unit=s)
 
-R = QArray(shape=(nx, ny), unit=m ** 2)
+R = qarray(shape=(nx, ny), unit=m ** 2)
 R.fill(11)
 
 

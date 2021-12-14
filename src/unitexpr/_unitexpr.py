@@ -419,7 +419,7 @@ class UnitExprMixin:
                 tuple(map(sub, self.base_exponents, other.base_exponents)),
                 self.base_factor / other.base_factor,
             )
-        # Handles e.g. object of type QArray divided by unit/unit_expr.
+        # Handles e.g. objects of type qarray divided by unit/unit_expr.
         try:
             return other.__rtruediv__(self)
         except TypeError:

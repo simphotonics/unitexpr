@@ -3,19 +3,19 @@ import pytest
 from numpy import array_equal
 
 from unitexpr.si_units import m, s, SiUnit
-from unitexpr import QArray
+from unitexpr import qarray
 from unitexpr.errors import OperationNotSupported
 
 
 cm = SiUnit("cm", "centimeter", "length", expr=1e-2 * m)
 
-a = QArray(shape=(2, 2))
+a = qarray(shape=(2, 2))
 a.fill(10.0)
 
-m1 = QArray(shape=(2, 2), unit=m)
+m1 = qarray(shape=(2, 2), unit=m)
 m1.fill(20.0)
 
-s1 = QArray(shape=(2, 2), unit=s)
+s1 = qarray(shape=(2, 2), unit=s)
 s1.fill(30.0)
 
 
@@ -44,9 +44,9 @@ class TestQArray:
 
     def test_add(self):
         assert (m1 + m1).unit == m
-        A = QArray((2, 2), unit=m)
+        A = qarray((2, 2), unit=m)
         A.fill(1.0)
-        B = QArray((2, 2), unit=cm)
+        B = qarray((2, 2), unit=cm)
         B.fill(10.0)
 
         C = A + B
@@ -64,9 +64,9 @@ class TestQArray:
     def test_sub(self):
         assert (s1 - s1).unit == s
 
-        A = QArray((2, 2), unit=m)
+        A = qarray((2, 2), unit=m)
         A.fill(1.0)
-        B = QArray((2, 2), unit=cm)
+        B = qarray((2, 2), unit=cm)
         B.fill(10.0)
 
         C = A - B
@@ -97,33 +97,33 @@ class TestQArray:
         assert (+s1).unit == s
 
     def test_lt(self):
-        A = QArray.from_input([0, 1, 2], unit=m)
-        B = QArray.from_input([0, 100, 2], unit=cm)
+        A = qarray.from_input([0, 1, 2], unit=m)
+        B = qarray.from_input([0, 100, 2], unit=cm)
         with pytest.raises(OperationNotSupported):
             m1 < s1
 
-        assert array_equal(A < B, QArray.from_input([0, 0, 0]))
+        assert array_equal(A < B, qarray.from_input([0, 0, 0]))
 
     def test_gt(self):
-        A = QArray.from_input([0, 1, 2], unit=m)
-        B = QArray.from_input([0, 100, 2], unit=cm)
+        A = qarray.from_input([0, 1, 2], unit=m)
+        B = qarray.from_input([0, 100, 2], unit=cm)
         with pytest.raises(OperationNotSupported):
             m1 > s1
 
-        assert array_equal(A > B, QArray.from_input([0, 0, 1]))
+        assert array_equal(A > B, qarray.from_input([0, 0, 1]))
 
     def test_le(self):
-        A = QArray.from_input([0, 1, 2], unit=m)
-        B = QArray.from_input([0, 100, 2], unit=cm)
+        A = qarray.from_input([0, 1, 2], unit=m)
+        B = qarray.from_input([0, 100, 2], unit=cm)
         with pytest.raises(OperationNotSupported):
             m1 <= s1
 
-        assert array_equal(A <= B, QArray.from_input([1, 1, 0]))
+        assert array_equal(A <= B, qarray.from_input([1, 1, 0]))
 
     def test_ge(self):
-        A = QArray.from_input([0, 1, 2], unit=m)
-        B = QArray.from_input([0, 100, 2], unit=cm)
+        A = qarray.from_input([0, 1, 2], unit=m)
+        B = qarray.from_input([0, 100, 2], unit=cm)
         with pytest.raises(OperationNotSupported):
             m1 >= s1
 
-        assert array_equal(A >= B, QArray.from_input([1, 1, 1]))
+        assert array_equal(A >= B, qarray.from_input([1, 1, 1]))

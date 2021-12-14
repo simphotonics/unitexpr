@@ -1,3 +1,9 @@
+## 0.0.8
+
+* Renamed class `QArray` -> `qarray`.
+* Class `Quantity` is now a scalar and does not subclass `qarray`.
+* Restructured docs.
+
 ## 0.0.7
 
 Added package [lockattrs] to config option `install_requires`.

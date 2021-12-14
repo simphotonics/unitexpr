@@ -25,6 +25,10 @@ class Quantity:
         unit: Union[UnitBase, UnitExprBase, float] = 1.0,
         info: str = "",
     ) -> Quantity:
+        """
+        Returns an object of type `Quantity`. The object attributes
+        are set in `__init__`.
+        """
         return super().__new__(cls)
 
     def __init__(
@@ -33,6 +37,9 @@ class Quantity:
         unit: Union[UnitBase, UnitExprBase, float] = 1.0,
         info: str = "",
     ):
+        """
+        Initializes object attributes.
+        """
         self.info = info
         self.__value, self.__unit = self.__normalize(value, unit)
         self.__unit = unit
@@ -65,7 +72,10 @@ class Quantity:
 
     @classmethod
     def __normalize(cls, value, unit) -> tuple:
-
+        """
+        Returns a tuple with entries scaled value and normalized unit.
+        The function is used in `__init__`.
+        """
         if not isinstance(value, Number):
             raise TypeError(
                 f"Parameter 'value' must be numerical. Found {value}."
@@ -93,9 +103,11 @@ class Quantity:
         return (value * factor, unit / factor)
 
     def __str__(self) -> str:
+        """Returns a string representing `self`."""
         return f"{self.__value} {self.__unit}"
 
     def __repr__(self) -> str:
+        """Returns a string representing `self`."""
         result = (
             f"{self.__class__.__name__}({self.__value}, "
             + f"unit={self.__unit}"
@@ -108,9 +120,11 @@ class Quantity:
         return result
 
     def copy(self):
+        """Returns a copy of `self`."""
         return self.__idem(self.__value, self.__unit, self.info)
 
     def __add__(self, other) -> Quantity:
+        """Returns the result of adding `self` and `other`."""
         other_unit = getattr(other, "unit", 1.0)
         other_value = getattr(other, "value", other)
 
@@ -133,6 +147,7 @@ class Quantity:
         raise OperationNotSupported(self, other, "+")
 
     def __sub__(self, other) -> Quantity:
+        """Returns the result of subtracting `other` from `self`."""
         other_unit = getattr(other, "unit", 1.0)
         other_value = getattr(other, "value", other)
 
@@ -204,7 +219,7 @@ class Quantity:
 
     def __rtruediv__(self, other) -> Quantity:
         """
-        Returns the result of dividing the `other` by `self`.
+        Returns the result of dividing `other` by `self`.
         """
         if isinstance(other, self._unit_types):
             return self.__class__(self.__value, other / self.__unit)
@@ -217,42 +232,51 @@ class Quantity:
         )
 
     def __pow__(self, other: Union[float, int]) -> Quantity:
+        """Returns the result of `self ** other`."""
         return self.__class__(self.__value ** other, self.__unit ** other)
 
     def __abs__(self) -> Quantity:
+        """Returns `abs(self)`. Note: The operator affects the value only."""
         return self.__idem(self.__value.__abs__(), self.__unit)
 
     def __neg__(self) -> Quantity:
+        """Returns `-self`. Note: The operator affects the value only."""
         return self.__idem(-self.__value, self.__unit)
 
     def __pos__(self) -> Quantity:
+        """Returns `+self`. Note: The operator affects the value only."""
         return self.__idem(self.__value.__pos__(), self.__unit)
 
     def __eq__(self, other) -> bool:
+        """Returns `True` if `self == other` and `False` otherwise."""
         result = self.compare(other, self.__value.__eq__)
         if result is None:
             return False
         return result
 
     def __le__(self, other) -> bool:
+        """Returns `True` if `self <= other` and `False` otherwise."""
         result = self.compare(other, self.__value.__le__)
         if result is None:
             raise OperationNotSupported(self, other, "<=")
         return result
 
     def __ge__(self, other) -> bool:
+        """Returns `True` if `self >= other` and `False` otherwise."""
         result = self.compare(other, self.__value.__ge__)
         if result is None:
             raise OperationNotSupported(self, other, ">=")
         return result
 
     def __gt__(self, other) -> bool:
+        """Returns `True` if `self > other` and `False` otherwise."""
         result = self.compare(other, self.__value.__gt__)
         if result is None:
             raise OperationNotSupported(self, other, ">")
         return result
 
     def __lt__(self, other) -> bool:
+        """Returns `True` if `self < other` and `False` otherwise."""
         result = self.compare(other, self.__value.__lt__)
         if result is None:
             raise OperationNotSupported(self, other, "<")
@@ -263,7 +287,7 @@ class Quantity:
     ) -> Union[bool, None]:
         """
         Generic comparison function that handles input of type `Number`,
-        `ndarray` and `QArray` using `comparison_operator`.
+        `ndarray` and `qarray` using `comparison_operator`.
 
         Returns `None` if the comparison failed due to incompatible units.
         """
