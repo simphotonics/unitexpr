@@ -22,7 +22,8 @@ site:
 			portray as_html
 
 init:
-	    pip install -r requirements.txt
+			if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+			if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
 			pip install -e .
 
 lint:
