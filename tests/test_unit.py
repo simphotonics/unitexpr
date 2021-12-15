@@ -150,3 +150,10 @@ class TestUnitPower:
         assert s ** 10 * s ** -9 == s
         assert zero ** 10 == zero
         assert zero ** 0.5 == zero
+
+
+class TestBaseExpr:
+    def test_eq(self):
+        assert c == c.base_expr
+        assert c / c.base_expr == 1.0
+        assert c.base_expr / c == 1.0

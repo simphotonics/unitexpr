@@ -316,8 +316,8 @@ class UnitBase(
                 continue
             dexpr[term] = exponent
         return self.expr_type(
-            dexpr.keys(),
-            dexpr.values(),
+            tuple(dexpr.keys()),
+            tuple(dexpr.values()),
             factor=self.base_factor,
             base_exponents=self.base_exponents,
             base_factor=self.base_factor,

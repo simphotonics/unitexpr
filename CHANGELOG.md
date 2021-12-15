@@ -1,3 +1,7 @@
+## 0.1.0
+
+Corrected logical error in class `Unit` property `base_expr`.
+
 ## 0.0.9
 
 Amended docs.
