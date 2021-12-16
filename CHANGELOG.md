@@ -1,3 +1,9 @@
+## 0.1.1
+
+* Fixed error in class `Quantity` method `__normalize`.
+* Added support for mixing quantities and units in expressions.
+* Extended tests.
+
 ## 0.1.0
 
 Corrected logical error in class `Unit` property `base_expr`.

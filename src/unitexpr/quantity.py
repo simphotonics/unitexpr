@@ -42,7 +42,6 @@ class Quantity:
         """
         self.info = info
         self.__value, self.__unit = self.__normalize(value, unit)
-        self.__unit = unit
 
     @classmethod
     def __idem(
@@ -104,7 +103,7 @@ class Quantity:
 
     def __str__(self) -> str:
         """Returns a string representing `self`."""
-        return f"{self.__value} {self.__unit}"
+        return f"{self.__value} * {self.__unit}"
 
     def __repr__(self) -> str:
         """Returns a string representing `self`."""
@@ -125,8 +124,13 @@ class Quantity:
 
     def __add__(self, other) -> Quantity:
         """Returns the result of adding `self` and `other`."""
-        other_unit = getattr(other, "unit", 1.0)
-        other_value = getattr(other, "value", other)
+
+        if isinstance(other, self._unit_types):
+            other_unit = other
+            other_value = 1.0
+        else:
+            other_unit = getattr(other, "unit", 1.0)
+            other_value = getattr(other, "value", other)
 
         # If units match simply add values.
         if self.__unit == other_unit:
@@ -148,9 +152,12 @@ class Quantity:
 
     def __sub__(self, other) -> Quantity:
         """Returns the result of subtracting `other` from `self`."""
-        other_unit = getattr(other, "unit", 1.0)
-        other_value = getattr(other, "value", other)
-
+        if isinstance(other, self._unit_types):
+            other_unit = other
+            other_value = 1.0
+        else:
+            other_unit = getattr(other, "unit", 1.0)
+            other_value = getattr(other, "value", other)
         # If units match simply subtract values.
         if self.__unit == other_unit:
             return self.__idem(self.__value - other_value, self.__unit)
@@ -291,8 +298,12 @@ class Quantity:
 
         Returns `None` if the comparison failed due to incompatible units.
         """
-        other_unit = getattr(other, "unit", 1.0)
-        other_value = getattr(other, "value", other)
+        if isinstance(other, self._unit_types):
+            other_unit = other
+            other_value = 1.0
+        else:
+            other_unit = getattr(other, "unit", 1.0)
+            other_value = getattr(other, "value", other)
 
         if self.__unit == other_unit:
             return comparison_operator(other_value)

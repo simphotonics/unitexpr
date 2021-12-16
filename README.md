@@ -121,9 +121,13 @@ print(dt*cavity_length) # Prints: 6250000.0 ps*nm
 
 
 ```
-Tip: Objects of type [`Quantity`][Quantity] support division and multiplication with
-`qarrays` and implement the numerical operators:
+The class [`Quantity`][Quantity] implements the numerical operators:
 `+, -, *, **, \, abs, neg, pos, <, <=, >, >=`.
+
+Tip: Objects of type [`Quantity`][Quantity] support division and multiplication with
+`qarrays`. Quantities can be used together with (compatible) units to form
+mathematical expressions.
+
 
 
 ### 3. Quantity Arrays

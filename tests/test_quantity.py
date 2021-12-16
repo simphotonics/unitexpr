@@ -28,15 +28,19 @@ class TestQuantity:
 
     def test_mul(self):
         assert (m1 * s1).unit == m * s
+        assert (m1 * s).unit == m * s
 
     def test_mul_unit(self):
         assert (m1 * s).unit == m * s
+        assert (m1 * 10.0 / s) == Quantity(200.0, m / s)
 
     def test_rmul(self):
         assert (3.0 * m1).unit == m
+        assert 3.0 * m1 == Quantity(60.0, m)
 
     def test_rmul_unit(self):
         assert (m * s1).unit == m * s
+        assert m * s1 == Quantity(30.0, m * s)
 
     def test_add(self):
         unit = getattr(m1 + m1, "unit", "Hello ->")
@@ -51,6 +55,9 @@ class TestQuantity:
         D = B + A
         assert D.unit == cm
         assert D.value == 110
+
+    def test_add_unit(self):
+        assert m1 + 35.0 * m == Quantity(m1.value + 35.0, m)
 
     def test_add_incompat(self):
         with pytest.raises(OperationNotSupported):
@@ -68,12 +75,16 @@ class TestQuantity:
         assert D.unit == cm
         assert D.value == -90
 
+    def test_sub_unit(self):
+        assert m1 - 35.0 * m == Quantity(m1.value - 35.0, m)
+
     def test_sub_incompat(self):
         with pytest.raises(OperationNotSupported):
             assert m1 - s1
 
     def test_truediv(self):
         assert (m1 / s).unit == m / s
+        assert m1/s1 == Quantity(m1.value/s1.value, m1.unit/s1.unit)
 
     def test_pow(self):
         assert (s1 ** 2).unit == s ** 2
@@ -94,12 +105,16 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         assert B < A
 
+        assert A < 1.1*m
+
     def test_gt(self):
         with pytest.raises(OperationNotSupported):
             m1 > s1
         A = Quantity(1.0, unit=m)
         B = Quantity(10, unit=cm)
         assert A > B
+
+        assert A > 0.8*m
 
     def test_le(self):
         with pytest.raises(OperationNotSupported):
@@ -108,6 +123,8 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         assert B < A
 
+        assert A <= 1.0*m
+
     def test_ge(self):
         with pytest.raises(OperationNotSupported):
             m1 >= s1
@@ -115,8 +132,10 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         assert A >= B
 
+        assert A >= 100*cm
 
-class TestQ:
+
+class TestArrayOperators:
     def test_mul(self):
         result = Q * m1
         assert result.unit == m ** 2

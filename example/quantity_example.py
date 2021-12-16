@@ -1,5 +1,5 @@
 from unitexpr import Quantity
-from unitexpr.si_units import m, s, SiUnit
+from unitexpr.si_units import m, s, c, SiUnit
 
 cm = SiUnit("cm", "centimeter", "length", m / 100.0)
 q = Quantity(2.0, m)
@@ -32,3 +32,10 @@ print(m2.__repr__())
 
 print(q + p)
 
+
+v = Quantity(c.base_factor, m/s, 'speed')
+print(v)
+
+v1 = v + c.base_expr
+
+print(v1.__repr__())
