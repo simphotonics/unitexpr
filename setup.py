@@ -11,7 +11,7 @@ setuptools.setup(
     description="Units, unit expressions, and united arrays.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/simphotonics/units",
+    url="https://github.com/simphotonics/unitexpr",
     project_urls={
         "Bug Tracker": "https://github.com/simphotonics/unitexpr/issues",
     },
