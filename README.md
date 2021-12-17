@@ -94,8 +94,8 @@ print(v1) # Prints:  1.0000011441248464*c
 print(v2) # Prints:  874031.4897959183*c_sound
 ```
 
-Tip: The methods [`proportional_to`][proportional_to]
-and [`scaling_factor`][scaling_factor] can be used to
+Tip: The methods `proportional_to`
+and `scaling_factor` can be used to
 determined if a unit or unit expression is a scaled
 version of another unit or unit expression:
 
