@@ -55,12 +55,14 @@ Unit expressions are objects with base class `UnitExprBase`.
 Each unit system defines a *unique* unit expression type
 that is available as a class attribute
 (`.expr_type`). Valid unit expression *terms* for a given unit system are:
-base units, derived units, unit expressions, and real numbers.
+*base units*, *derived units*, *unit expressions*, and *real numbers*.
 
-The package comes with two predefined unit systems:
-SI units (based on meter, second, kilogram, Ampere, Kelvin, mol, and candela)
-and Semiconductor units
-(based on nanometer, picosecond, electron mass, Ampere, Kelvin, mol, and candela).
+The package includes two predefined unit systems with a comprehensive list of
+derived units and physical constants:
+* `unitexpr.si_units`: SI Units based on meter, second, kilogram,
+Ampere, Kelvin, mol, and candela,
+* `unitexpr.sc_units`: Semiconductor Units based on nanometer, picosecond,
+electron mass, Ampere, Kelvin, mol, and candela.
 
 ``` python
 from unitexpr.si_units import m, s, c, SiUnit
@@ -83,12 +85,12 @@ w = v + 20.0*v
 # Defining a derived unit:
 c_sound = SiUnit('c_sound', 'speed of sound', 'velocity', expr=343*m/s)
 
-v1 = c_light + c_sound
-v2 = c_sound + c_light
+v1 = c + c_sound
+v2 = c_sound + c
 
 assert v1 == v2
 
-print(v1) # Prints:  1.0000011441248464*c_light
+print(v1) # Prints:  1.0000011441248464*c
 print(v2) # Prints:  874031.4897959183*c_sound
 ```
 
