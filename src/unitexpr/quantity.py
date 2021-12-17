@@ -103,7 +103,11 @@ class Quantity:
 
     def __str__(self) -> str:
         """Returns a string representing `self`."""
-        return f"{self.__value} * {self.__unit}"
+        return (
+            f"{self.__value}"
+            if self.__unit == 1.0
+            else f"{self.__value} * {self.__unit}"
+        )
 
     def __repr__(self) -> str:
         """Returns a string representing `self`."""
@@ -111,7 +115,6 @@ class Quantity:
             f"{self.__class__.__name__}({self.__value}, "
             + f"unit={self.__unit}"
         )
-
         if self.info.strip():
             result += f", info={self.info.__repr__()})"
         else:

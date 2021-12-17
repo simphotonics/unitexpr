@@ -26,6 +26,16 @@ class TestQuantity:
         assert m1.value == 20
         assert s1.value == 30
 
+    def test_str(self):
+        assert m1.__str__() == "20 * m"
+        assert Quantity(20.0, unit=SiUnit.expr_type.one).__str__() == "20.0"
+
+    def test_repr(self):
+        assert (
+            m1.__repr__() == "Quantity(20, unit=m, info='Court yard length.')"
+        )
+        assert Quantity(1.0, unit=1.0).__repr__() == "Quantity(1.0, unit=1.0)"
+
     def test_mul(self):
         assert (m1 * s1).unit == m * s
         assert (m1 * s).unit == m * s
@@ -84,7 +94,7 @@ class TestQuantity:
 
     def test_truediv(self):
         assert (m1 / s).unit == m / s
-        assert m1/s1 == Quantity(m1.value/s1.value, m1.unit/s1.unit)
+        assert m1 / s1 == Quantity(m1.value / s1.value, m1.unit / s1.unit)
 
     def test_pow(self):
         assert (s1 ** 2).unit == s ** 2
@@ -105,7 +115,7 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         assert B < A
 
-        assert A < 1.1*m
+        assert A < 1.1 * m
 
     def test_gt(self):
         with pytest.raises(OperationNotSupported):
@@ -114,7 +124,7 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         assert A > B
 
-        assert A > 0.8*m
+        assert A > 0.8 * m
 
     def test_le(self):
         with pytest.raises(OperationNotSupported):
@@ -123,7 +133,7 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         assert B < A
 
-        assert A <= 1.0*m
+        assert A <= 1.0 * m
 
     def test_ge(self):
         with pytest.raises(OperationNotSupported):
@@ -132,7 +142,7 @@ class TestQuantity:
         B = Quantity(10, unit=cm)
         assert A >= B
 
-        assert A >= 100*cm
+        assert A >= 100 * cm
 
 
 class TestArrayOperators:

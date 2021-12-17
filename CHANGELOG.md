@@ -1,3 +1,9 @@
+## 0.1.3
+
+Amended method `__str__` in class `Quantity`.
+Unitless quantities are now formatted like the
+corresponding numerical value.
+
 ## 0.1.2
 
 * Amended docs and hyperlinks.
