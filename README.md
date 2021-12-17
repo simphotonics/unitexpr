@@ -59,6 +59,7 @@ that is available as a class attribute
 
 The package includes two predefined unit systems with a comprehensive list of
 derived units and physical constants:
+
 * `unitexpr.si_units`: SI Units based on meter, second, kilogram,
 Ampere, Kelvin, mol, and candela,
 * `unitexpr.sc_units`: Semiconductor Units based on nanometer, picosecond,
