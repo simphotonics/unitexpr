@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Amended docs and hyperlinks.
+
 ## 0.1.1
 
 * Fixed error in class `Quantity` method `__normalize`.
