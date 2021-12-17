@@ -92,6 +92,32 @@ print(v1) # Prints:  1.0000011441248464*c_light
 print(v2) # Prints:  874031.4897959183*c_sound
 ```
 
+Tip: The methods [`proportional_to`][proportional_to]
+and [`scaling_factor`][scaling_factor] can be used to
+determined if a unit or unit expression is a scaled
+version of another unit or unit expression:
+
+```Python
+
+from unitexpr.si_units import m, s, SiUnit
+
+# Define a derived unit
+cm = SiUnit('cm', name='centimeter', quantity='length', expr=m/100.0)
+
+# Check if units are proportional
+assert cm.proportional_to(m) == True
+assert cm.proportional_to(s) == False
+
+# Get the scaling factor that converts cm to m.
+assert cm.scaling_factor(m) == 100.0
+
+# Get the scaling factor that converts m to cm.
+assert m.scaling_factor(cm) == 0.01
+
+# Get the scaling factor that converts m to s.
+assert m.scaling_factor(s) == None
+```
+
 ### 2. Scalar Quantities
 
 The class [`Quantity`][Quantity] represents a `scalar` quantity that
