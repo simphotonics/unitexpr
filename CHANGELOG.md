@@ -1,3 +1,8 @@
+## 0.1.4
+
+Replaced class `Quantity` with a subclass of `qarray`.
+Amended docs and tests.
+
 ## 0.1.3
 
 Amended method `__str__` in class `Quantity`.
