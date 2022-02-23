@@ -121,56 +121,19 @@ assert m.scaling_factor(cm) == 0.01
 assert m.scaling_factor(s) == None
 ```
 
-### 2. Scalar Quantities
-
-The class [`Quantity`][Quantity] represents a `scalar` quantity that
-can be expressed using a single numerical value
-(including complex numbers) and a unit.
-Its constructor has the additional parameter
-`info` which can be used to store object documentation.
-
-Objects of type [`Quantity`][Quantity] can be used to store
-physical parameters:
-
-``` Python
-from unitexpr import Quantity
-from unitexpr.sc_units import ps, nm
-
-dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
-cavity_length = Quantity(1.25e6, unit=nm, info='Optical cavity length.')
-
-# Accessing the quantity value:
-print(dt.value)      # Prints: 5.0
-
-print(dt)            # Prints: 5.0 ps
-print(dt.__repr__()) # Quantity(5.0, unit=ps, info='Time-integration step size.')
-
-# Quantity expressions:
-print(dt*cavity_length) # Prints: 6250000.0 ps*nm
-
-
-```
-The class [`Quantity`][Quantity] implements the numerical operators:
-`+, -, *, **, \, abs, neg, pos, <, <=, >, >=`.
-
-Tip: Objects of type [`Quantity`][Quantity] support division and multiplication with
-`qarrays`. Quantities can be used together with (compatible) units to form
-mathematical expressions.
-
-
-
-### 3. Quantity Arrays
+### 2. Quantity Arrays
 
 To support scientific calculation
 the package includes [`qarray`][qarray]
 an extension of numpy's `ndarray`.
 
 The entries of a [`qarray`][qarray] represent
-the numerical value of physical *quantities*
+the value of a physical *quantity*
 that can be expressed in terms of a
-number and a unit.  The constructor of [`qarray`][qarray]
+numerical value and a unit.  The constructor of [`qarray`][qarray]
 accepts the same parameters as the constructor of `ndarray` with
-the additional optional parameter `unit` (default value 1.0).
+the additional optional parameters `unit` (default value 1.0).
+and `info` which can be used to store object documentation.
 
 To construct a [`qarray`][qarray] from an existing array or
 a sequence of entries use the class method `qarray.from_input`.
@@ -250,6 +213,9 @@ Any numerical factor will be multiplied with the array using scalar
 multiplication. The remaining part of the unit expression will be
 multiplied with the unit attribute of the array.
 
+United array can be added to unit expressions as long as the
+base units match.
+
 To retain a numerical factor, for example `pi` as term of the
 unit expression it must be declared as a unit (see the example
 above).
@@ -257,6 +223,42 @@ above).
 Note: Units and unit expressions with zero magnitude
 may `not` be assigned as the unit attribute of qarrays (
 normalization will fail with a `DivisionByZero` error).
+
+
+### 2. Scalar Quantities
+
+The class [`Quantity`][Quantity] represents a `scalar` quantity that
+can be expressed using a single numerical value
+(including complex numbers) and a unit. It is in fact a `qarray` with
+shape (1, 0). 
+
+Objects of type [`Quantity`][Quantity] can be used to store
+physical parameters:
+
+``` Python
+from unitexpr import Quantity
+from unitexpr.sc_units import ps, nm
+
+dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
+cavity_length = Quantity(1.25e6, unit=nm, info='Optical cavity length.')
+
+# Accessing the quantity value:
+print(dt.value)      # Prints: 5.0
+
+print(dt)            # Prints: 5.0 ps
+print(dt.__repr__()) # Quantity(5.0, unit=ps, info='Time-integration step size.')
+
+# Quantity expressions:
+print(dt*cavity_length) # Prints: 6250000.0 ps*nm
+
+
+```
+The class [`Quantity`][Quantity] implements the numerical operators:
+`+, -, *, **, \, abs, neg, pos, <, <=, >, >=`.
+
+Tip: Objects of type [`Quantity`][Quantity] support division and multiplication with
+`qarrays`. Quantities can be used together with (compatible) units to form
+mathematical expressions.
 
 
 

@@ -10,24 +10,23 @@ import numpy as np
 from numpy.core._exceptions import UFuncTypeError
 
 from .errors import OperationNotSupported
-from .quantity import Quantity
 from .unit import UnitBase, UnitExprBase
 
 
 class qarray(np.ndarray):
     """
-    An array with elements representing a quantity that can be
+    An array with elements representing the magnitudes of quantity that can be
     described by a numerical value and a unit.
 
     `qarray` is a sub-class of ndarray with the additional instance
-    attribute `unit`.
+    attributes `unit` and `info`.
 
     Implementation closely follows:
     https://numpy.org/devdocs/user/basics.subclassing.html#basics-subclassing
     """
 
-    _unit_types = (UnitBase, UnitExprBase)
-    __slots__ = ("__unit",)
+    __unit_types = (UnitBase, UnitExprBase)
+    __slots__ = ("__unit", "__info")
 
     def __new__(
         subtype,
@@ -38,6 +37,7 @@ class qarray(np.ndarray):
         strides=None,
         order=None,
         unit=1.0,
+        info="",
     ):
         # The call in the next line triggers a call to
         # qarray.__array_finalize__
@@ -45,6 +45,7 @@ class qarray(np.ndarray):
             subtype, shape, dtype, buffer, offset, strides, order
         )
         obj.unit = unit
+        obj.__info = info
         return obj
 
     def __array_finalize__(self, obj):
@@ -92,7 +93,7 @@ class qarray(np.ndarray):
     def unit(self, value) -> None:
         factor = (
             value.factor
-            if isinstance(value, self._unit_types)
+            if isinstance(value, self.__unit_types)
             else float(value)
         )
 
@@ -118,13 +119,29 @@ class qarray(np.ndarray):
                 # normalize unit:
                 self.__unit = value
 
+    @property
+    def info(self):
+        try:
+            return self.__info
+        except AttributeError:
+            return ""
+
     def __str__(self) -> str:
-        return super().__str__() + " unit: " + str(self.unit)
+        unit = f" unit: {self.unit}" if (self.unit != 1.0) else ""
+        return super().__str__() + unit
 
     def __repr__(self) -> str:
-        return super().__repr__()[:-1] + f", unit={self.unit})"
+        unit = f", unit={self.unit}," if self.unit != 1.0 else ""
+        info = f", info={self.info.__repr__()}" if self.info != "" else ""
+        return super().__repr__()[:-1] + unit + info + ")"
 
     def __add__(self, other) -> qarray:
+        if isinstance(other, self.__unit_types):
+            beta = other.scaling_factor(self.unit)
+            if beta is None:
+                raise OperationNotSupported(self, other, "+")
+            return super().__add__(1.0 / beta)
+
         other_unit = getattr(other, "unit", 1.0)
         # If units match simply add arrays.
         if self.unit == other_unit:
@@ -144,8 +161,13 @@ class qarray(np.ndarray):
         raise OperationNotSupported(self, other, "+")
 
     def __sub__(self, other) -> qarray:
-        other_unit = getattr(other, "unit", 1.0)
+        if isinstance(other, self.__unit_types):
+            beta = other.scaling_factor(self.unit)
+            if beta is None:
+                raise OperationNotSupported(self, other, "+")
+            return super().__sub__(1.0 / beta)
 
+        other_unit = getattr(other, "unit", 1.0)
         # If units match simply subtract arrays.
         if self.unit == other_unit:
             return super().__sub__(other)
@@ -168,14 +190,9 @@ class qarray(np.ndarray):
         Returns the result of multiplying the united ndarray `self`
         with `other`.
         """
-        if isinstance(other, self._unit_types):
+        if isinstance(other, self.__unit_types):
             obj = self.copy()
             obj.unit = self.unit * other
-            return obj
-
-        if isinstance(other, Quantity):
-            obj = super().__mul__(other.value)
-            obj.unit = self.unit * other.unit
             return obj
 
         obj = super().__mul__(other)
@@ -188,14 +205,9 @@ class qarray(np.ndarray):
         Returns the result of multiplying `other` with the united array
         `self`.
         """
-        if isinstance(other, self._unit_types):
+        if isinstance(other, self.__unit_types):
             obj = self.copy()
             obj.unit = other * self.unit
-            return obj
-
-        if isinstance(other, Quantity):
-            obj = super().__rmul__(other.value)
-            obj.unit = other.unit * self.unit
             return obj
 
         obj = super().__rmul__(other)
@@ -208,14 +220,9 @@ class qarray(np.ndarray):
         Returns the result of dividing the united ndarray `self`
         with `other`.
         """
-        if isinstance(other, self._unit_types):
+        if isinstance(other, self.__unit_types):
             obj = self.copy()
             obj.unit = self.unit / other
-            return obj
-
-        if isinstance(other, Quantity):
-            obj = super().__truediv__(other.value)
-            obj.unit = self.unit / other.unit
             return obj
 
         obj = super().__truediv__(other)
@@ -227,14 +234,9 @@ class qarray(np.ndarray):
         """
         Returns the result of dividing `other` by the united ndarray `self`.
         """
-        if isinstance(other, self._unit_types):
+        if isinstance(other, self.__unit_types):
             obj = super().__rtruediv__(other.factor)
             obj.unit = other / self.unit
-            return obj
-
-        if isinstance(other, Quantity):
-            obj = super().__rtruediv__(other.value)
-            obj.unit = other.unit / self.unit
             return obj
 
         obj = super().__rtruediv__(other)
@@ -294,13 +296,23 @@ class qarray(np.ndarray):
             raise OperationNotSupported(self, other, "<")
         return result
 
-    def compare(self, other, comparison_operator: Callable) -> qarray:
+    def compare(
+        self, other, comparison_operator: Callable
+    ) -> Union[qarray, None]:
         """
         Generic comparison function that handles input of type `Number`,
         `ndarray` and `qarray` using `comparison_operator`.
 
         Returns `None` if the comparison failed due to incompatible units.
         """
+        if isinstance(other, self.__unit_types):
+            beta = other.scaling_factor(self.unit)
+            if beta is None:
+                return None
+            obj = comparison_operator(1.0 / beta)
+            obj.unit = 1.0
+            return obj
+
         other_unit = getattr(other, "unit", 1.0)
 
         if self.unit == other_unit:

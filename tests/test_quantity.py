@@ -27,14 +27,14 @@ class TestQuantity:
         assert s1.value == 30
 
     def test_str(self):
-        assert m1.__str__() == "20 * m"
+        assert m1.__str__() == "20 m"
         assert Quantity(20.0, unit=SiUnit.expr_type.one).__str__() == "20.0"
 
     def test_repr(self):
         assert (
             m1.__repr__() == "Quantity(20, unit=m, info='Court yard length.')"
         )
-        assert Quantity(1.0, unit=1.0).__repr__() == "Quantity(1.0, unit=1.0)"
+        assert Quantity(1.0, unit=1.0).__repr__() == "Quantity(1.0)"
 
     def test_mul(self):
         assert (m1 * s1).unit == m * s
@@ -54,8 +54,8 @@ class TestQuantity:
 
     def test_add(self):
         unit = getattr(m1 + m1, "unit", "Hello ->")
-
         assert unit == m
+        
         A = Quantity(1.0, unit=m)
         B = Quantity(10, unit=cm)
         C = A + B
