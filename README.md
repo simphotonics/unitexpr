@@ -226,12 +226,12 @@ may `not` be assigned as the unit attribute of qarrays (
 normalization will fail with a `DivisionByZero` error).
 
 
-### 2. Scalar Quantities
+### 3. Scalar Quantities
 
 The class [`Quantity`][Quantity] represents a `scalar` quantity that
-can be expressed using a single numerical value
-(including complex numbers) and a unit. It is in fact a `qarray` with
-shape (1, 0). 
+can be expressed using a single numerical value and a unit.
+It is a subclass of `qarray`
+and has shape (1, 0).
 
 Objects of type [`Quantity`][Quantity] can be used to store
 physical parameters:
