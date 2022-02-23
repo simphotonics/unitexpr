@@ -8,6 +8,7 @@ For example, it makes little sense to add a quantity
 representing weight and one representing distance, or to
 add seconds and pico-seconds.
 
+
 The package [`unitexpr`][unitexpr] provides classes and meta-classes that
 make it trivial to define custom unit systems and [`numpy`][numpy] arrays
 with support for physical units.
