@@ -131,6 +131,11 @@ class qarray(np.ndarray):
     def info(self, value: str) -> None:
         self.__info = value
 
+    def __format__(self, __format_spec: str) -> str:
+        if self.ndim == 0:
+            return self.__str__()
+        return super().__format__(__format_spec)
+
     def __str__(self) -> str:
         if self.ndim == 0:
             unit = f" {self.unit}" if (self.unit != 1.0) else ""
