@@ -354,4 +354,4 @@ Contributions are welcome.
 
 [qarray]: http://unitexpr.simphotonics.com/reference/unitexpr/qarray/#qarray
 
-[Quantity]: http://unitexpr.simphotonics.com/reference/unitexpr/quantity/#Quantity
+[quantity]: https://unitexpr.simphotonics.com/reference/unitexpr/quantity/
