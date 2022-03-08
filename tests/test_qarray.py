@@ -20,6 +20,21 @@ s1.fill(30.0)
 
 
 class TestQArray:
+    def test_str(self):
+        assert a.__str__() == "[[10. 10.]\n [10. 10.]]"
+        assert m1.__str__() == "[[20. 20.]\n [20. 20.]] unit: m"
+
+    def test_repr(self):
+        assert a.__repr__() == "qarray([[10., 10.],\n        [10., 10.]])"
+        assert (
+            m1.__repr__()
+            == "qarray([[20., 20.],\n        [20., 20.]], unit=m)"
+        )
+
+    def test_format(self):
+        assert f"{a}" == "[[10. 10.]\n [10. 10.]]"
+        assert f"{m1}" == "[[20. 20.]\n [20. 20.]] unit: m"
+
     def test_default(self):
         assert a.unit == 1.0
         assert a.unit == m.expr_type.one
@@ -56,6 +71,14 @@ class TestQArray:
         D = B + A
         assert D.unit == cm
         assert D[0, 0] == 110
+
+        E = A + cm
+        assert E.unit == m
+        assert E[0, 0] == 1.01
+
+        D = cm + A
+        assert D.unit == m
+        assert D[0, 0] == 1.01
 
     def test_add_incompat(self):
         with pytest.raises(OperationNotSupported):
