@@ -1,3 +1,9 @@
+## 0.1.5
+- Removed the class `Quantity` and replaced it by a
+  function with name `quantity`.
+- Units and unit expressions can now be combined with qarrays
+to create new expressions. 
+
 ## 0.1.4
 
 Replaced class `Quantity` with a subclass of `qarray`.

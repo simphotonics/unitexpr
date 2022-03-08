@@ -79,14 +79,14 @@ A sample output (not all columns are shown) produced on a PC with 32GB RAM memor
 and an Intel Core i5-6260U CPU running at 1.80GHz is displayed below:
 
 ```Console
--------------------------- benchmark: 4 tests ---------------------------
-Name (time in us)        Mean             StdDev       Rounds  Iterations
+---------------------------- benchmar: 4 tests  -------------------------
+Name (time in us)       Mean            StdDev         Rounds  Iterations
 -------------------------------------------------------------------------
-test_add_qarray       69.1973 (1.08)     29.4567 (6.13)     4         700
-test_add_unit_array   82.5764 (1.29)      6.2624 (1.30)     4         700
+test_add_qarray      68.1265 (1.05)    21.3399 (4.15)       4         700
+test_add_unit_array  81.0177 (1.25)     6.1296 (1.19)       4         700
 
-test_mult_qarray      64.1123 (1.0)       4.8071 (1.0)      4         700
-test_mult_unit_array  66.0932 (1.03)      9.3117 (1.94)     4         700
+test_mult_qarray     65.4302 (1.01)     5.1430 (1.0)        4         700
+test_mult_unit_array 64.8208 (1.0)      7.3627 (1.43)       4         700
 -------------------------------------------------------------------------
 
 ```

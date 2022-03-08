@@ -136,8 +136,9 @@ accepts the same parameters as the constructor of `ndarray` with
 the additional optional parameters `unit` (default value 1.0).
 and `info` which can be used to store object documentation.
 
-To construct a [`qarray`][qarray] from an existing array or
-a sequence of entries use the class method `qarray.from_input`.
+To construct a [`qarray`][qarray] from a numerical value or
+an existing array one can use the convenience function
+[quantity][quantity] or the class method `qarray.from_input`.
 
 ```Python
 from math import pi
@@ -145,7 +146,7 @@ from math import pi
 from unitexpr import qarray
 from unitexpr.si_units import m, s, h_bar, m_e, c, SiUnit
 
-
+# Constructing a qarray with a given shape.
 q = qarray(shape=(2, 2))
 q.fill(10.0)
 print("q = ")
@@ -157,7 +158,11 @@ print("a = q*m = ")
 print(a)
 print()
 
+# Constructing a qarray from another array.
 b = qarray.from_input(q, unit=s)
+
+# Using the convenience method quantity.
+b = quantity(q, unit=s)
 b.fill(2.0)
 
 print("b =")
@@ -228,37 +233,27 @@ normalization will fail with a `DivisionByZero` error).
 
 ### 3. Scalar Quantities
 
-The class [`Quantity`][Quantity] represents a `scalar` quantity that
-can be expressed using a single numerical value and a unit.
-It is a subclass of `qarray`
-and has shape (1, 0).
-
-Objects of type [`Quantity`][Quantity] can be used to store
-physical parameters:
+To represent a `scalar` quantity one can use a zero-dimensional `qarray`.
+The function `quanity` provides a convenient way to create scalar quantities.
 
 ``` Python
-from unitexpr import Quantity
+from unitexpr import quanity
 from unitexpr.sc_units import ps, nm
 
-dt = Quantity(5.0, unit=ps, info='Time-integration step size.')
-cavity_length = Quantity(1.25e6, unit=nm, info='Optical cavity length.')
+dt = quantity(5.0, unit=ps, info='Time-integration step size.')
+cavity_length = quantity(1.25e6, unit=nm, info='Optical cavity length.')
 
 # Accessing the quantity value:
-print(dt.value)      # Prints: 5.0
+print(dt.item())      # Prints: 5.0
 
 print(dt)            # Prints: 5.0 ps
-print(dt.__repr__()) # Quantity(5.0, unit=ps, info='Time-integration step size.')
+print(dt.__repr__()) # qarray(5.0, unit=ps, info='Time-integration step size.')
 
-# Quantity expressions:
+# quantity expressions:
 print(dt*cavity_length) # Prints: 6250000.0 ps*nm
-
-
 ```
-The class [`Quantity`][Quantity] implements the numerical operators:
-`+, -, *, **, \, abs, neg, pos, <, <=, >, >=`.
 
-Tip: Objects of type [`Quantity`][Quantity] support division and multiplication with
-`qarrays`. Quantities can be used together with (compatible) units to form
+Tip:  Quantities can be used together with (compatible) units to form
 mathematical expressions.
 
 

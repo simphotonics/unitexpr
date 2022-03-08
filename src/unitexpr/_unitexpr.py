@@ -146,98 +146,103 @@ class UnitExprMixin:
             base_factor=abs(self.base_factor),
         )
 
-    def __add__(self, other) -> UnitExprBase:
+    def __add__(self, other):
         """
         Returns the result of adding the unit expression `self` and `other`.
         """
-        if (
-            isinstance(other, self.valid_types)
-            and self.base_exponents == other.base_exponents
-        ):
-            if self.base_factor == 0 or not self.terms:
-                return (
-                    other
-                    if isinstance(other, UnitExprBase)
-                    else other.self_expr
+        if isinstance(other, self.valid_types):
+            # Compatible units
+            if self.base_exponents == other.base_exponents:
+                if self.base_factor == 0 or not self.terms:
+                    return (
+                        other
+                        if isinstance(other, UnitExprBase)
+                        else other.self_expr
+                    )
+
+                base_factor = self.base_factor + other.base_factor
+                factor = base_factor / self.base_factor * self.factor
+                return self.expr_type(
+                    self.terms,
+                    self.exponents,
+                    factor,
+                    self.base_exponents,
+                    base_factor,
                 )
+            else:
+                raise OperationNotSupported(other, self, "+")
 
-            base_factor = self.base_factor + other.base_factor
-            factor = base_factor / self.base_factor * self.factor
+        if isinstance(other, (float, int)):
+            if self.base_exponents == self.base_exponents_zero:
+                base_factor = self.base_factor + other
 
-            return self.expr_type(
-                self.terms,
-                self.exponents,
-                factor,
-                self.base_exponents,
-                base_factor,
-            )
+                if self.base_factor == 0.0 or not self.terms:
+                    return self.one * base_factor
 
-        if (
-            isinstance(other, (float, int))
-            and self.base_exponents == self.base_exponents_zero
-        ):
-            base_factor = self.base_factor + other
-
-            if self.base_factor == 0.0 or not self.terms:
-                return self.one * base_factor
-
-            factor = base_factor / self.base_factor * self.factor
-
-            return self.expr_type(
-                self.terms,
-                self.exponents,
-                factor,
-                self.base_exponents,
-                base_factor,
-            )
-
-        raise OperationNotSupported(self, other, "+")
+                factor = base_factor / self.base_factor * self.factor
+                return self.expr_type(
+                    self.terms,
+                    self.exponents,
+                    factor,
+                    self.base_exponents,
+                    base_factor,
+                )
+            else:
+                raise OperationNotSupported(other, self, "+")
+        # A suitable operator might be defined for `other`.
+        try:
+            return NotImplemented
+        except TypeError as error:
+            raise OperationNotSupported(self, other, "+") from error
 
     def __radd__(self, other) -> UnitExprBase:
         """
         Returns the result of adding `other` and the unit expression `self`.
         """
-        if (
-            isinstance(other, self.valid_types)
-            and self.base_exponents == other.base_exponents
-        ):
+        if isinstance(other, self.valid_types):
+            if self.base_exponents == other.base_exponents:
 
-            if other.base_factor == 0.0 or not other.terms:
-                return self
+                if other.base_factor == 0.0 or not other.terms:
+                    return self
 
-            base_factor = other.base_factor + self.base_factor
-            factor = base_factor / other.base_factor * other.factor
+                base_factor = other.base_factor + self.base_factor
+                factor = base_factor / other.base_factor * other.factor
 
-            return self.expr_type(
-                other.terms,
-                other.exponents,
-                factor,
-                other.base_exponents,
-                base_factor,
-            )
+                return self.expr_type(
+                    other.terms,
+                    other.exponents,
+                    factor,
+                    other.base_exponents,
+                    base_factor,
+                )
+            else:
+                raise OperationNotSupported("+", other, self)
 
-        if (
-            isinstance(other, (float, int))
-            and self.base_exponents == self.base_exponents_zero
-        ):
-            if other == 0:
-                return self
+        if isinstance(other, (float, int)):
+            if self.base_exponents == self.base_exponents_zero:
+                if other == 0:
+                    return self
 
-            if self.base_factor == 0.0 or not self.terms:
-                return self.one * other
+                if self.base_factor == 0.0 or not self.terms:
+                    return self.one * other
 
-            base_factor = other + self.base_factor
-            factor = base_factor / self.base_factor * self.factor
+                base_factor = other + self.base_factor
+                factor = base_factor / self.base_factor * self.factor
 
-            return self.expr_type(
-                self.terms,
-                self.exponents,
-                factor,
-                self.base_exponents,
-                base_factor,
-            )
+                return self.expr_type(
+                    self.terms,
+                    self.exponents,
+                    factor,
+                    self.base_exponents,
+                    base_factor,
+                )
+            else:
+                raise OperationNotSupported(other, self, "+")
 
-        raise OperationNotSupported(other, self, "+")
+        try:
+            return NotImplemented
+        except TypeError as error:
+            raise OperationNotSupported(other, self, "+") from error
 
     def __pos__(self):
         return self
@@ -246,87 +251,95 @@ class UnitExprMixin:
         """
         Returns the result of subtracting `other` from `self`.
         """
-        if (
-            isinstance(other, self.valid_types)
-            and self.base_exponents == other.base_exponents
-        ):
-            if self.base_factor == 0.0 or not self.terms:
-                return -other
+        if isinstance(other, self.valid_types):
+            if self.base_exponents == other.base_exponents:
+                if self.base_factor == 0.0 or not self.terms:
+                    return -other
 
-            base_factor = self.base_factor - other.base_factor
-            factor = base_factor / self.base_factor * self.factor
+                base_factor = self.base_factor - other.base_factor
+                factor = base_factor / self.base_factor * self.factor
 
-            return self.expr_type(
-                self.terms,
-                self.exponents,
-                factor,
-                self.base_exponents,
-                base_factor,
-            )
+                return self.expr_type(
+                    self.terms,
+                    self.exponents,
+                    factor,
+                    self.base_exponents,
+                    base_factor,
+                )
+            else:
+                raise OperationNotSupported(self, other, "-")
 
-        if (
-            isinstance(other, (float, int))
-            and self.base_exponents == self.base_exponents_zero
-        ):
-            base_factor = self.base_factor - other
+        if isinstance(other, (float, int)):
+            if self.base_exponents == self.base_exponents_zero:
+                base_factor = self.base_factor - other
 
-            if self.base_factor == 0.0 or not self.terms:
-                return self.one * base_factor
+                if self.base_factor == 0.0 or not self.terms:
+                    return self.one * base_factor
 
-            factor = base_factor / self.base_factor * self.factor
+                factor = base_factor / self.base_factor * self.factor
 
-            return self.expr_type(
-                self.terms,
-                self.exponents,
-                factor,
-                self.base_exponents,
-                base_factor,
-            )
+                return self.expr_type(
+                    self.terms,
+                    self.exponents,
+                    factor,
+                    self.base_exponents,
+                    base_factor,
+                )
+            else:
+                raise OperationNotSupported(self, other, "-")
 
-        raise OperationNotSupported(self, other, "-")
+        try:
+            return NotImplemented
+        except TypeError as error:
+            raise OperationNotSupported(self, other, "-") from error
 
     def __rsub__(self, other):
         """
         Returns the result of subtracting `self` from `other`.
         """
-        if (
-            isinstance(other, self.valid_types)
-            and self.base_exponents == other.base_exponents
-        ):
-            if other.base_factor == 0.0 or not other.terms:
-                return -self
+        if isinstance(other, self.valid_types):
+            if self.base_exponents == other.base_exponents:
 
-            base_factor = other.base_factor - self.base_factor
-            factor = base_factor / other.base_factor * other.factor
+                if other.base_factor == 0.0 or not other.terms:
+                    return -self
 
-            return self.expr_type(
-                other.terms,
-                other.exponents.exponents,
-                factor,
-                other.base_exponents,
-                base_factor,
-            )
+                base_factor = other.base_factor - self.base_factor
+                factor = base_factor / other.base_factor * other.factor
 
-        if (
-            isinstance(other, (float, int))
-            and self.base_exponents == self.base_exponents_zero
-        ):
-            base_factor = other - self.base_factor
+                return self.expr_type(
+                    other.terms,
+                    other.exponents.exponents,
+                    factor,
+                    other.base_exponents,
+                    base_factor,
+                )
+            else:
+                raise OperationNotSupported(other, self, "-")
 
-            if self.base_factor == 0.0 or not self.terms:
-                return self.one * base_factor
+        if isinstance(other, (float, int)):
+            if self.base_exponents == self.base_exponents_zero:
+                base_factor = other - self.base_factor
 
-            factor = base_factor / self.base_factor * self.factor
+                if self.base_factor == 0.0 or not self.terms:
+                    return self.one * base_factor
 
-            return self.expr_type(
-                self.terms,
-                self.exponents,
-                factor,
-                self.base_exponents,
-                base_factor,
-            )
+                factor = base_factor / self.base_factor * self.factor
 
-        raise OperationNotSupported(other, self, "-")
+                return self.expr_type(
+                    self.terms,
+                    self.exponents,
+                    factor,
+                    self.base_exponents,
+                    base_factor,
+                )
+
+            else:
+                raise OperationNotSupported(other, self, "-")
+
+        try:
+            return NotImplemented
+        except TypeError as error:
+            raise OperationNotSupported(other, self, "-") from error
 
     def __neg__(self) -> UnitExprBase:
         """
@@ -340,7 +353,7 @@ class UnitExprMixin:
             base_factor=-self.base_factor,
         )
 
-    def __mul__(self, other) -> "UnitExprBase":
+    def __mul__(self, other) -> UnitExprBase:
         """
         Returns the result of multiplying `self` with `other`.
 
@@ -366,11 +379,11 @@ class UnitExprMixin:
             )
 
         try:
-            return other.__rmul__(self)
+            return NotImplemented
         except TypeError as error:
             raise OperationNotSupported(self, other, "*") from error
 
-    def __rmul__(self, other) -> "UnitExprBase":
+    def __rmul__(self, other) -> UnitExprBase:
         """
         Returns the result of multiplying `other` with `self`.
 
@@ -394,9 +407,13 @@ class UnitExprMixin:
                 self.base_exponents,
                 other * self.base_factor,
             )
-        raise OperationNotSupported(other, self, "*")
 
-    def __truediv__(self, other) -> "UnitExprBase":
+        try:
+            return NotImplemented
+        except TypeError as error:
+            raise OperationNotSupported(other, self, "*") from error
+
+    def __truediv__(self, other) -> UnitExprBase:
         """
         Returns the result of: `self` / `other`.
         - `self`: Left operand.
@@ -449,7 +466,10 @@ class UnitExprMixin:
                 other.base_factor / self.base_factor,
             )
 
-        raise OperationNotSupported(other, self, "/")
+        try:
+            return NotImplemented
+        except TypeError as error:
+            raise OperationNotSupported(other, self, "/") from error
 
     def __pow__(self, other: int) -> UnitExprBase:
         """
@@ -475,7 +495,10 @@ class UnitExprMixin:
 
         factors = self.common_factors(other)
         if factors is None:
-            raise OperationNotSupported(self, other, "<=")
+            try:
+                return NotImplemented
+            except TypeError as error:
+                raise OperationNotSupported(self, other, "<=") from error
         left, right = factors
         return True if left <= right else False
 
@@ -487,7 +510,11 @@ class UnitExprMixin:
         """
         factors = self.common_factors(other)
         if factors is None:
-            raise OperationNotSupported(self, other, ">=")
+            try:
+                return NotImplemented
+            except TypeError as error:
+                raise OperationNotSupported(self, other, ">=") from error
+
         left, right = factors
         return True if left >= right else False
 
@@ -499,7 +526,10 @@ class UnitExprMixin:
         """
         factors = self.common_factors(other)
         if factors is None:
-            raise OperationNotSupported(self, other, "<")
+            try:
+                return NotImplemented
+            except TypeError as error:
+                raise OperationNotSupported(self, other, "<") from error
         left, right = factors
         return True if left < right else False
 
@@ -512,7 +542,10 @@ class UnitExprMixin:
         """
         factors = self.common_factors(other)
         if factors is None:
-            raise OperationNotSupported(self, other, ">")
+            try:
+                return NotImplemented
+            except TypeError as error:
+                raise OperationNotSupported(self, other, ">") from error
         left, right = factors
         return True if left > right else False
 

@@ -76,12 +76,13 @@ class qarray(np.ndarray):
         self.__unit = getattr(obj, "unit", 1.0)
 
     @classmethod
-    def from_input(cls, input, unit=1.0) -> qarray:
+    def from_input(cls, input, unit=1.0, info="") -> qarray:
         """Constructs a `qarray` from an existing ndarray
         or from a (nested) sequence of entries.
         """
         obj = np.asarray(input).view(cls)
         obj.unit = unit
+        obj.info = info
         return obj
 
     @property
@@ -126,12 +127,20 @@ class qarray(np.ndarray):
         except AttributeError:
             return ""
 
+    @info.setter
+    def info(self, value: str) -> None:
+        self.__info = value
+
     def __str__(self) -> str:
-        unit = f" unit: {self.unit}" if (self.unit != 1.0) else ""
-        return super().__str__() + unit
+        if self.ndim == 0:
+            unit = f" {self.unit}" if (self.unit != 1.0) else ""
+            return super().__str__() + unit
+        else:
+            unit = f" unit: {self.unit}" if (self.unit != 1.0) else ""
+            return super().__str__() + unit
 
     def __repr__(self) -> str:
-        unit = f", unit={self.unit}," if self.unit != 1.0 else ""
+        unit = f", unit={self.unit}" if self.unit != 1.0 else ""
         info = f", info={self.info.__repr__()}" if self.info != "" else ""
         return super().__repr__()[:-1] + unit + info + ")"
 
@@ -159,6 +168,9 @@ class qarray(np.ndarray):
             return super().__add__(other * alpha.base_factor)
 
         raise OperationNotSupported(self, other, "+")
+
+    def __radd__(self, other) -> qarray:
+        return self.__add__(other)
 
     def __sub__(self, other) -> qarray:
         if isinstance(other, self.__unit_types):
