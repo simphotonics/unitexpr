@@ -114,25 +114,6 @@ class UnitExprMixin:
             return other / self.base_factor
         return None
 
-    def common_factors(self, other) -> Union[Tuple[float, float], None]:
-        """
-        Returns the tuple `(self.base_factor, other.base_factor)`
-        if self and other have the same `base_exponents` otherwise `None`.
-
-        Returns the tuple `(self.base_factor, other)` if `self` is number-like
-        that is all entries of `self.base_exponents` are zero and other is
-        of type  int` or `float`.
-        """
-        if isinstance(other, self.valid_types):
-            if other.base_exponents != self.base_exponents:
-                return None
-            return (other.base_factor, self.base_factor)
-
-        if isinstance(other, (int, float)):
-            if self.base_exponents != self.base_exponents_zero:
-                return None
-            return (other, self.base_factor)
-        return None
 
     def __abs__(self) -> UnitExprBase:
         """
