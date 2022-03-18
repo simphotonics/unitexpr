@@ -2,7 +2,7 @@ import pytest
 
 from numpy import array_equal
 
-from unitexpr.si_units import m, s, SiUnit
+from unitexpr.si_units import m, s, c, SiUnit
 from unitexpr import qarray
 from unitexpr.errors import OperationNotSupported
 
@@ -44,6 +44,15 @@ class TestQArray:
         x.unit = 1000 * m / s
         assert x[0, 0] == 1.0e4
         assert x.unit.factor == 1.0
+
+    def test_base(self):
+        x = qarray.from_input(1.0, c)
+        assert x.unit == c
+        y = x.base
+        assert y.unit == m / s
+        assert y.item() == c.base_factor
+        assert (a == a.base).all()
+        assert (x == y).all()
 
     def test_mul(self):
         assert (m1 * s1).unit == m * s

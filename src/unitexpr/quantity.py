@@ -2,6 +2,7 @@ from numbers import Number
 
 from .qarray import qarray
 
+
 def quantity(value: Number, unit=1.0, info=""):
     """
     Constructs a quantity described by

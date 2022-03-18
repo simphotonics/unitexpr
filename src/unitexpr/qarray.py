@@ -131,6 +131,18 @@ class qarray(np.ndarray):
     def info(self, value: str) -> None:
         self.__info = value
 
+    @property
+    def base(self):
+        """
+        Returns the quantity in terms of base units.
+        Note: Returns `self` if the quantity has `unit == 1.0`.
+        """
+        if self.unit == 1.0:
+            return self
+        other = self.copy()
+        other.unit = self.unit.base_expr
+        return other
+
     def __format__(self, __format_spec: str) -> str:
         if self.ndim == 0:
             return self.__str__()
