@@ -1,3 +1,4 @@
+from numpy import identity
 from unitexpr import quantity
 from unitexpr.si_units import m, s, c, SiUnit
 
@@ -6,7 +7,7 @@ q = quantity(2.0, m)
 p = quantity(2.0, cm)
 
 print(f"q = {q}")
-print('')
+print("")
 
 a = q * m
 print(f"a = q*m = {a}")
@@ -39,3 +40,8 @@ print(v)
 v1 = v + c.base_expr
 
 print(v1.__repr__())
+
+eta = quantity(identity(4, dtype=int), info="Minkovsky space metric")
+eta[0, 0] = -1
+
+print(eta)
